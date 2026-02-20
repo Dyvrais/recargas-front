@@ -88,7 +88,7 @@ export default function Products() {
                 filtered.map((product) => (
                   <button
                     onClick={() => handleOpenModal(product.id)}
-                    className="bg-gray-800 rounded-lg my-5 hover:scale-105 transition-transform duration-200 w-full"
+                    className="bg-gray-800 rounded-lg hover:scale-105 transition-transform duration-200 w-full"
                     key={product.id}
                   >
                     {product.Imagen?.[0]?.url ? (
