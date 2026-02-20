@@ -1,0 +1,22 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Fugaz+One&family=Noto+Sans+JP:wght@100..900&display=swap');
+
+@theme{
+  --font-Fugaz: 'Fugaz One', cursive;
+  --font-Noto: 'Noto Sans JP', sans-serif;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: #fefefe !important; 
+  width: 30px !important;
+  height: 30px !important;/* Change arrow color to red */
+}
+.swiper-pagination-bullet-active {
+     background-color: #efbf00 !important;
+}
+
+#root {
+  max-width: 1280px;
+  text-align: center;
+}
