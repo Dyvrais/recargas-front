@@ -43,7 +43,7 @@ export default function Gallery() {
         }}
         navigation={true}
         modules={[Autoplay, Pagination, Navigation]}
-        className="w-screen"
+        className="w-screen md:w-200"
       >
         {PhotoGallery.map((item) => (
           <SwiperSlide key={item.id}>
@@ -51,7 +51,7 @@ export default function Gallery() {
               src={item.src}
               alt={item.alt}
               loading="lazy"
-              className="w-screen h-[202px] object-contain"
+              className="w-screen h-[202px] md:h-[300px] object-contain"
             />
           </SwiperSlide>
         ))}

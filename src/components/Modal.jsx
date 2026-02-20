@@ -125,7 +125,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
       onClick={onClose}
     >
       <div
-        className="bg-gray-800 relative opacity-100 p-6 rounded-lg shadow-lg w-80 overflow-y-auto max-h-[80vh]"
+        className="bg-gray-800 relative opacity-100 p-6 rounded-lg shadow-lg w-80 md:w-120 overflow-y-auto max-h-[80vh]"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -211,7 +211,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="tel"
+                    type="number"
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}
                     className="w-full p-2 rounded bg-gray-700 text-white"
@@ -259,7 +259,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="tel"
+                    type="number"
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}
                     className="w-full p-2 rounded bg-gray-700 text-white"
@@ -288,7 +288,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="tel"
+                    type="number"
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}
                     className="w-full p-2 rounded bg-gray-700 text-white"
@@ -340,7 +340,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="tel"
+                    type="number"
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}
                     className="w-full p-2 rounded bg-gray-700 text-white"

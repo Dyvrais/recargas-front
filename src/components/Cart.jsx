@@ -4,6 +4,7 @@ const Cart = ({ isOpen, onClose }) => {
   const [cart, setCart] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
+  const [submitError, setSubmitError] = useState(false);
   const [telefono, setTelefono] = useState("");
   const [referencia, setReferencia] = useState("");
 
@@ -18,10 +19,25 @@ const Cart = ({ isOpen, onClose }) => {
     localStorage.setItem("cart", JSON.stringify(newCart));
   };
 
-  const submitOrder = async () => {
+  const submitOrder = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+
     if (cart.length === 0) return;
 
+    // Validate required fields
+    if (
+      !telefono ||
+      !telefono.toString().trim() ||
+      !referencia ||
+      !referencia.toString().trim()
+    ) {
+      setSubmitError(true);
+      setSubmitMessage("Por favor completa los campos requeridos.");
+      return;
+    }
+
     setIsSubmitting(true);
+    setSubmitError(false);
     setSubmitMessage("");
 
     try {
@@ -53,13 +69,17 @@ const Cart = ({ isOpen, onClose }) => {
       // Clear cart
       setCart([]);
       localStorage.removeItem("cart");
+      setSubmitError(false);
       setSubmitMessage("Orden enviada exitosamente!");
       setTimeout(() => {
         setSubmitMessage("");
         onClose();
       }, 2000);
+      setTelefono("");
+      setReferencia("");
     } catch (error) {
       console.error("Error submitting order:", error);
+      setSubmitError(true);
       setSubmitMessage("Error al enviar la orden. Inténtalo de nuevo.");
     } finally {
       setIsSubmitting(false);
@@ -74,7 +94,7 @@ const Cart = ({ isOpen, onClose }) => {
       onClick={onClose}
     >
       <div
-        className="bg-gray-800 relative opacity-100 p-6 rounded-lg shadow-lg w-80 max-h-96 overflow-y-auto"
+        className="bg-gray-800 relative opacity-100 p-6 rounded-lg shadow-lg w-80 md:w-100 max-h-96 overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -109,14 +129,14 @@ const Cart = ({ isOpen, onClose }) => {
                 </li>
               ))}
             </ul>
-            <div className="mt-4 space-y-2">
+            <form className="mt-4 space-y-2">
               <label className="block text-sm text-white">
                 Teléfono asociado a la cuenta:
                 <input
-                  type="tel"
+                  type="number"
                   value={telefono}
                   onChange={(e) => setTelefono(e.target.value)}
-                  className="w-full p-2 rounded bg-gray-700 text-white"
+                  className="w-full p-2 rounded mt-2 bg-gray-700 text-white"
                   placeholder="Ingresa el teléfono asociado a la cuenta"
                   required
                 />
@@ -126,25 +146,27 @@ const Cart = ({ isOpen, onClose }) => {
                 <input
                   type="text"
                   value={referencia}
+                  maxLength={4}
                   onChange={(e) => setReferencia(e.target.value)}
-                  className="w-full p-2 rounded bg-gray-700 text-white"
+                  className="w-full p-2 rounded mt-2 bg-gray-700 text-white"
                   placeholder="Ingresa la referencia de pago"
                   required
                 />
               </label>
-            </div>
-            <div className="mt-4 flex justify-between">
               <button
                 onClick={submitOrder}
                 disabled={isSubmitting}
-                className="bg-yellow-500 text-black py-2 px-4 rounded disabled:opacity-50"
+                type="submit"
+                className="mt-4  bg-yellow-500 m-auto text-center text-black py-2 px-4 rounded disabled:opacity-50"
               >
                 {isSubmitting ? "Enviando..." : "Enviar Orden"}
               </button>
               {submitMessage && (
-                <span className="text-green-400">{submitMessage}</span>
+                <p className={submitError ? "text-red-400" : "text-green-400"}>
+                  {submitMessage}
+                </p>
               )}
-            </div>
+            </form>
           </>
         )}
       </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Navbar from "./components/Navbar";
 import "./App.css";
 import Products from "./components/ProductListing";
@@ -15,7 +15,6 @@ function App() {
       <Navbar onCartClick={() => setIsCartOpen(true)} />
       <Gallery />
       <Products />
-      {/* <Section /> */}
       <Footer />
       <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>

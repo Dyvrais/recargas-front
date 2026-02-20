@@ -36,7 +36,7 @@ export default function Products() {
 
   if (!products.length)
     return (
-      <div role="status" className="flex flex-col items-center mt-10">
+      <div role="status" className="flex w-screen flex-col items-center mt-10">
         <svg
           aria-hidden="true"
           class="w-8 h-8 text-neutral-tertiary animate-spin fill-brand"
@@ -60,9 +60,9 @@ export default function Products() {
   return (
     <section
       id="products"
-      className="flex flex-col justify-center items-center scroll-mt-20 scroll-smooth"
+      className="flex w-screen flex-col justify-center items-center scroll-mt-20 scroll-smooth"
     >
-      <h2 className="font-Noto tracking-wide font-bold text-center text-yellow-500 my-3 text-xl md:text-7xl">
+      <h2 className="font-Noto tracking-wide font-bold text-center text-yellow-500 my-3 text-xl md:text-3xl">
         CATALOGO
       </h2>
 
@@ -88,13 +88,13 @@ export default function Products() {
                 filtered.map((product) => (
                   <button
                     onClick={() => handleOpenModal(product.id)}
-                    className="bg-gray-800 rounded-lg"
+                    className="bg-gray-800 rounded-lg my-5 hover:scale-105 transition-transform duration-200 w-full"
                     key={product.id}
                   >
                     {product.Imagen?.[0]?.url ? (
                       <img
-                        src={`${import.meta.env.VITE_API_URL}${product.Imagen[0].url}`}
-                        className="size-30 rounded-t-lg object-cover"
+                        src={`${product.Imagen[0].url}`}
+                        className="size-30 md:size-45 rounded-t-lg object-cover"
                         alt={product.Nombre || ""}
                       />
                     ) : null}

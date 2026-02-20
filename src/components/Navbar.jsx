@@ -10,7 +10,7 @@ export default function Navbar({ onCartClick }) {
   return (
     <>
       {/* NAVBAR */}
-      <nav className="z-50 bg-[#242525] fixed top-0 inset-x-0 bg-repeat py-4 px-4 shadow-md backdrop-blur-md">
+      <nav className="z-50 bg-[#242525] fixed top-0 inset-x-0 bg-repeat py-4 px-4 shadow-md backdrop-blur-md md:py-3">
         <div className="mx-auto px-2 flex items-center w-full">
           {/* Left: Hamburger (mobile) */}
           <div className="flex items-center">
@@ -25,7 +25,7 @@ export default function Navbar({ onCartClick }) {
           </div>
 
           {/* Center: Title (mobile-first, centered) */}
-          <div className="flex-1 text-center">
+          <div className="flex-1 text-center md:text-left md:pl-4">
             <p className="font-Noto text-lg tracking-wide text-yellow-500 text-shadow md:text-3xl">
               RecargasXtreme
             </p>
@@ -33,25 +33,20 @@ export default function Navbar({ onCartClick }) {
 
           {/* Right: Desktop menu + Cart */}
           <div className="flex items-center space-x-4">
-            <ul className="hidden md:flex items-center justify-center space-x-6 font-Abandon text-md font-medium text-white">
+            <ul className="hidden md:flex items-center justify-center space-x-6 md:space-x-10 font-Noto text-md font-medium text-white">
               <li className="text-shadow hover:underline hover:scale-110 transition-transform">
-                <a className="scroll-smooth" href="#servicios">
-                  SERVICIOS
+                <a className="scroll-smooth" href="">
+                  JUEGOS
                 </a>
               </li>
               <li className="text-shadow hover:underline hover:scale-110 transition-transform">
-                <a className="scroll-smooth" href="#catalogo">
-                  CATALOGO
+                <a className="scroll-smooth" href="">
+                  GIFT CARDS
                 </a>
               </li>
               <li className="text-shadow hover:underline hover:scale-110 transition-transform">
-                <a className="scroll-smooth" href="#contacto">
-                  CONTACTO
-                </a>
-              </li>
-              <li className="pr-2 text-shadow hover:underline hover:scale-110 transition-transform">
-                <a className="scroll-smooth" href="#ubicacion">
-                  UBICACION
+                <a className="scroll-smooth" href="">
+                  STREAMING
                 </a>
               </li>
             </ul>
@@ -61,7 +56,7 @@ export default function Navbar({ onCartClick }) {
               onClick={onCartClick}
               className="inline-flex items-center px-3 py-2 rounded-md transition-transform"
             >
-              <IoCartOutline className="text-yellow-500 text-xl font-bold" />
+              <IoCartOutline className="text-yellow-500 text-xl font-bold md:text-3xl" />
             </button>
           </div>
         </div>
@@ -73,26 +68,20 @@ export default function Navbar({ onCartClick }) {
           }`}
         >
           <ul className="flex flex-col items-center space-y-4 py-2 font-Noto text-md text-yellow-500">
-            <li className="w-full text-center hover:bg-[#fec135] hover:text-white transition">
-              <a href="#servicios" onClick={() => setMenuOpen(false)}>
-                INICIO
-              </a>
-              <div className="w-3/4 m-auto border-t border-gray-300 mt-3"></div>
-            </li>
             <li className="w-full text-center  hover:bg-[#fec135] hover:text-white transition">
-              <a href="#catalogo" onClick={() => setMenuOpen(false)}>
+              <a href="" onClick={() => setMenuOpen(false)}>
                 JUEGOS
               </a>
               <div className="w-3/4 m-auto border-t border-gray-300 mt-3"></div>
             </li>
             <li className="w-full text-center  hover:bg-[#fec135] hover:text-white transition">
-              <a href="#contacto" onClick={() => setMenuOpen(false)}>
+              <a href="" onClick={() => setMenuOpen(false)}>
                 GIFT CARDS
               </a>
               <div className="w-3/4 m-auto border-t border-gray-300 mt-3"></div>
             </li>
             <li className="w-full text-center  hover:bg-[#fec135] hover:text-white transition">
-              <a href="#ubicacion" onClick={() => setMenuOpen(false)}>
+              <a href="" onClick={() => setMenuOpen(false)}>
                 STREAMING
               </a>
             </li>
