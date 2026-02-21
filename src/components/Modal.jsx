@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FaRegCopy } from "react-icons/fa";
-import { FaCheck } from "react-icons/fa";
 
 const Modal = ({ isOpen, onClose, itemId }) => {
   const [data, setData] = useState(null);
@@ -15,50 +13,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
   const [passwordVal, setPasswordVal] = useState("");
   const [telefono, setTelefono] = useState("");
   const [loginMethod, setLoginMethod] = useState("-");
-  const [paymentMethod, setPaymentMethod] = useState("pago-movil");
   const [successMessage, setSuccessMessage] = useState("");
-  const [copyMessage, setCopyMessage] = useState("");
-
-  const paymentListRef = useRef(null);
-
-  const copyToClipboard = async (text) => {
-    try {
-      if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(text);
-        setCopyMessage("Copiado al portapapeles");
-        setTimeout(() => setCopyMessage(""), 1500);
-        return;
-      }
-    } catch (e) {
-      // fallthrough to fallback
-    }
-
-    try {
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      textarea.style.position = "fixed";
-      textarea.style.left = "-9999px";
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textarea);
-      setCopyMessage("Copiado al portapapeles");
-      setTimeout(() => setCopyMessage(""), 2000);
-    } catch (e) {
-      // ignore
-    }
-  };
-
-  const handleCopy = async (text) => {
-    if (!text) return;
-    await copyToClipboard(text);
-  };
-
-  const handleCopyAll = async () => {
-    const text = paymentListRef.current?.innerText?.trim() || "";
-    if (!text) return;
-    await copyToClipboard(text);
-  };
 
   useEffect(() => {
     fetch("https://ve.dolarapi.com/v1/dolares")
@@ -168,7 +123,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                 {data.data[0].product?.Nombre || "Producto"}
               </h2>
 
-              <div className="my-2 grid grid-cols-2 gap-4 ">
+              <div className="my-2 grid grid-cols-1 gap-4 ">
                 {data.data.map((opcion) => {
                   const bsPrice =
                     Math.trunc(opcion.Precio * DolarParalelo * 100) / 100;
@@ -178,10 +133,20 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                       key={opcion.id}
                       type="button"
                       onClick={() => setSelectedOptionId(opcion.id)}
-                      className={`border rounded-lg text-sm p-2 text-left ${selected ? "bg-yellow-400 text-black" : "bg-gray-700 text-white"}`}
+                      className={`border flex rounded-lg text-sm p-2 items-center text-left ${selected ? "bg-yellow-400 text-black" : "bg-gray-900 text-white"}`}
                     >
-                      <p className="font-semibold">{opcion.TipoCoin}</p>
-                      <p>{bsPrice} Bs.</p>
+                      <img
+                        src={opcion.ImagenCoin?.url}
+                        className="size-6 justify-center"
+                      />
+                      <div className="flex flex-col pl-4 py-2">
+                        <p className="font-semibold">{opcion.TipoCoin}</p>
+                        <p
+                          className={`${selected ? "font-bold text-black" : "text-yellow-500"}`}
+                        >
+                          {bsPrice} Bs.
+                        </p>
+                      </div>
                     </button>
                   );
                 })}
@@ -349,7 +314,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                   />
                 </>
               )}
-              <label htmlFor="payment" className="text-sm text-white">
+              {/* <label htmlFor="payment" className="text-sm text-white">
                 Método de pago:
               </label>
               <select
@@ -360,87 +325,11 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                 className="p-2 rounded-lg bg-gray-700 text-white"
               >
                 <option value="pago-movil">Pago movil</option>
-                {/* <option value="zinli">Zinli</option>
+                <option value="zinli">Zinli</option>
                 <option value="binance">Binance</option>
-                <option value="kontigo">Kontigo</option> */}
-              </select>
+                <option value="kontigo">Kontigo</option>
+              </select> */}
             </form>
-
-            {/* Payment details placeholder per method */}
-            <div className="text-sm bg-gray-700 text-white p-3 rounded-lg mb-3">
-              {paymentMethod === "pago-movil" && (
-                <ul ref={paymentListRef} className="list-none space-y-2">
-                  <li className="font-semibold">Pago Móvil</li>
-                  <li className="flex items-center justify-between">
-                    <span>Banco: Banco Plaza</span>
-                    <button
-                      className="text-sm bg-gray-600 px-2 py-1 rounded"
-                      onClick={() => handleCopy("Banco Plaza")}
-                    >
-                      <FaRegCopy />
-                    </button>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span>Cedula: 26.551.722</span>
-                    <button
-                      className="text-sm bg-gray-600 px-2 py-1 rounded"
-                      onClick={() => handleCopy("26.551.722")}
-                    >
-                      <FaRegCopy />
-                    </button>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span>Telefono: 0412-6310088</span>
-                    <button
-                      className="text-sm bg-gray-600 px-2 py-1 rounded"
-                      onClick={() => handleCopy("04126310088")}
-                    >
-                      <FaRegCopy />
-                    </button>
-                  </li>
-                  <button
-                    onClick={handleCopyAll}
-                    className="mt-2 m-auto flex items-center gap-1 text-md bg-gray-600 px-2 py-1 rounded"
-                  >
-                    <FaRegCopy />
-                    <span className="ml-2">Copiar todo</span>
-                  </button>
-                </ul>
-              )}
-              {copyMessage && (
-                <div className="my-2 m-auto bg-green-600 text-white text-center p-2 w-fit rounded-full flex items-center gap-2">
-                  <FaCheck className="text-sm" />
-                  <span>{copyMessage}</span>
-                </div>
-              )}
-              {/* {paymentMethod === "zinli" && (
-                <div>
-                  <h4 className="font-semibold">Zinli</h4>
-                  <p>ID Zinli: zinli_user_123</p>
-                  <p>Email: pagos@zinli.example</p>
-                  <p>Banco asociado: Zinli Bank</p>
-                  <p>Referencia: ZIN-REF-5678</p>
-                </div>
-              )}
-              {paymentMethod === "binance" && (
-                <div>
-                  <h4 className="font-semibold">Binance</h4>
-                  <p>Wallet: 0xABCDEF0123456789</p>
-                  <p>Etiqueta/Memo: 987654321</p>
-                  <p>Moneda: USDT TRC20</p>
-                  <p>Referencia: BIN-REF-9012</p>
-                </div>
-              )}
-              {paymentMethod === "kontigo" && (
-                <div>
-                  <h4 className="font-semibold">Kontigo</h4>
-                  <p>ID Comercio: KONT-0001</p>
-                  <p>Número: 555-1234</p>
-                  <p>Contacto: ventas@kontigo.example</p>
-                  <p>Referencia: KON-REF-3456</p>
-                </div>
-              )} */}
-            </div>
 
             <div className="flex flex-col items-center gap-2">
               <button
@@ -468,7 +357,6 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     CorreoCuenta: emailVal,
                     ContraseñaCuenta: passwordVal,
                     MetodoInicioSesion: loginMethod,
-                    MetodoPago: paymentMethod,
                     FechaAgregado: new Date().toISOString(),
                   };
 

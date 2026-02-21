@@ -10,7 +10,7 @@ export default function Navbar({ onCartClick }) {
   return (
     <>
       {/* NAVBAR */}
-      <nav className="z-50 bg-[#242525] fixed top-0 inset-x-0 bg-repeat py-4 px-4 shadow-md backdrop-blur-md md:py-3">
+      <nav className="z-50 bg-[#08090a] fixed  top-0 inset-x-0 bg-repeat py-4 px-4 shadow-md backdrop-blur-md md:py-3">
         <div className="mx-auto px-2 flex items-center w-full">
           {/* Left: Hamburger (mobile) */}
           <div className="flex items-center">
@@ -25,10 +25,12 @@ export default function Navbar({ onCartClick }) {
           </div>
 
           {/* Center: Title (mobile-first, centered) */}
-          <div className="flex-1 text-center md:text-left md:pl-4">
-            <p className="font-Noto text-lg tracking-wide text-yellow-500 text-shadow md:text-3xl">
-              RecargasXtreme
-            </p>
+          <div className="md:flex-1 m-auto justify-center items-center md:text-left md:pl-4">
+            <img
+              src="/src/assets/logo.png"
+              alt="Logo"
+              className="h-10 w-auto"
+            />
           </div>
 
           {/* Right: Desktop menu + Cart */}
@@ -63,7 +65,7 @@ export default function Navbar({ onCartClick }) {
 
         {/* Mobile menu - slides down */}
         <div
-          className={`md:hidden overflow-hidden bg-[#242525] backdrop-blur transition-max-h duration-300 ${
+          className={`md:hidden overflow-hidden bg-[#08090a] backdrop-blur transition-max-h duration-300 ${
             menuOpen ? "max-h-60" : "max-h-0"
           }`}
         >

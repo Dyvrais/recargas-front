@@ -15,6 +15,7 @@ function App() {
       <Navbar onCartClick={() => setIsCartOpen(true)} />
       <Gallery />
       <Products />
+      <Section />
       <Footer />
       <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>

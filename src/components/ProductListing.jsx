@@ -62,7 +62,7 @@ export default function Products() {
       id="products"
       className="flex w-screen flex-col justify-center items-center scroll-mt-20 scroll-smooth"
     >
-      <h2 className="font-Noto tracking-wide font-bold text-center text-yellow-500 my-3 text-xl md:text-3xl">
+      <h2 className="font-Melon tracking-wide font-bold text-center text-white my-3 text-xl md:text-3xl">
         CATALOGO
       </h2>
 
@@ -88,17 +88,17 @@ export default function Products() {
                 filtered.map((product) => (
                   <button
                     onClick={() => handleOpenModal(product.id)}
-                    className="bg-gray-800 rounded-lg hover:scale-105 transition-transform duration-200 w-full"
+                    className="bg-gray-800 rounded-lg hover:scale-105 transition-transform duration-200 w-fit"
                     key={product.id}
                   >
                     {product.Imagen?.[0]?.url ? (
                       <img
                         src={`${product.Imagen[0].url}`}
-                        className="size-30 md:size-45 rounded-t-lg object-cover"
+                        className="size-32 md:size-45 rounded-t-lg object-cover"
                         alt={product.Nombre || ""}
                       />
                     ) : null}
-                    <h3 className="text-white text-md font-Noto text-center py-2">
+                    <h3 className="text-white text-sm font-Noto text-center box-border m-auto w-[110px] py-2">
                       {product.Nombre || "Nombre indefinido"}
                     </h3>
                   </button>

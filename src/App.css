@@ -1,9 +1,18 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Fugaz+One&family=Noto+Sans+JP:wght@100..900&display=swap');
 
+@font-face {
+  font-family: 'Melon Pop';
+  src: url('/src/assets/Melon Pop.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme{
   --font-Fugaz: 'Fugaz One', cursive;
   --font-Noto: 'Noto Sans JP', sans-serif;
+  --font-Melon: 'Melon Pop', sans-serif;
 }
 
 .swiper-button-next,
