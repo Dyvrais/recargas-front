@@ -26,7 +26,7 @@ export default function Navbar({ onCartClick }) {
 
           {/* Center: Title (mobile-first, centered) */}
           <div className="md:flex-1 m-auto justify-center items-center md:text-left md:pl-4">
-            <img src="/public/logo.png" alt="Logo" className="h-10 w-auto" />
+            <img src="public/logo.png" alt="Logo" className="h-10 w-auto" />
           </div>
 
           {/* Right: Desktop menu + Cart */}
