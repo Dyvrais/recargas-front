@@ -10,7 +10,7 @@ export default function Navbar({ onCartClick }) {
   return (
     <>
       {/* NAVBAR */}
-      <nav className="z-50 bg-[#08090a] fixed  top-0 inset-x-0 bg-repeat py-4 px-4 shadow-md backdrop-blur-md md:py-3">
+      <nav className="z-50 bg-[#08090a] fixed top-0 inset-x-0 bg-repeat py-4 px-4 shadow-md backdrop-blur-md md:py-3">
         <div className="mx-auto px-2 flex items-center w-full">
           {/* Left: Hamburger (mobile) */}
           <div className="flex items-center">
@@ -26,11 +26,7 @@ export default function Navbar({ onCartClick }) {
 
           {/* Center: Title (mobile-first, centered) */}
           <div className="md:flex-1 m-auto justify-center items-center md:text-left md:pl-4">
-            <img
-              src="/src/assets/logo.png"
-              alt="Logo"
-              className="h-10 w-auto"
-            />
+            <img src="/public/logo.png" alt="Logo" className="h-10 w-auto" />
           </div>
 
           {/* Right: Desktop menu + Cart */}

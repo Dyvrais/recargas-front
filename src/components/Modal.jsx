@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 
 const Modal = ({ isOpen, onClose, itemId }) => {
   const [data, setData] = useState(null);
@@ -24,6 +24,16 @@ const Modal = ({ isOpen, onClose, itemId }) => {
       });
   }, []);
 
+  const opcionesSorted = useMemo(() => {
+    if (!data?.data) return [];
+    const rate = Number(DolarParalelo) || 0;
+    return [...data.data].sort((a, b) => {
+      const aBs = Math.trunc((a?.Precio || 0) * rate * 100) / 100;
+      const bBs = Math.trunc((b?.Precio || 0) * rate * 100) / 100;
+      return aBs - bBs;
+    });
+  }, [data, DolarParalelo]);
+
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
@@ -41,7 +51,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
       try {
         // 2. The actual fetch call, passing the abort signal
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/opcions?filters[product][id][$eq]=${itemId}&populate=product`,
+          `${import.meta.env.VITE_API_URL}/api/opcions?filters[product][id][$eq]=${itemId}&populate=*`,
           { signal },
         );
 
@@ -124,10 +134,33 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               </h2>
 
               <div className="my-2 grid grid-cols-1 gap-4 ">
-                {data.data.map((opcion) => {
+                {opcionesSorted.map((opcion) => {
+                  const getImageUrl = (imgField) => {
+                    if (!imgField) return null;
+                    // If field is a string URL
+                    if (typeof imgField === "string") return imgField;
+                    // Strapi v4 shape: { data: { attributes: { url }}} or array
+                    if (imgField.data) {
+                      const d = imgField.data;
+                      if (Array.isArray(d) && d[0]?.attributes?.url)
+                        return d[0].attributes.url;
+                      if (d.attributes?.url) return d.attributes.url;
+                    }
+                    // Legacy shape or direct object with url
+                    if (Array.isArray(imgField) && imgField[0]?.url)
+                      return imgField[0].url;
+                    if (imgField.url) return imgField.url;
+                    // Try attributes directly
+                    if (imgField.attributes?.url)
+                      return imgField.attributes.url;
+                    return null;
+                  };
+
                   const bsPrice =
                     Math.trunc(opcion.Precio * DolarParalelo * 100) / 100;
                   const selected = selectedOptionId === opcion.id;
+                  const imgUrl = getImageUrl(opcion.ImagenCoin);
+
                   return (
                     <button
                       key={opcion.id}
@@ -135,10 +168,13 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                       onClick={() => setSelectedOptionId(opcion.id)}
                       className={`border flex rounded-lg text-sm p-2 items-center text-left ${selected ? "bg-yellow-400 text-black" : "bg-gray-900 text-white"}`}
                     >
-                      <img
-                        src={opcion.ImagenCoin?.url}
-                        className="size-6 justify-center"
-                      />
+                      {imgUrl ? (
+                        <img
+                          src={imgUrl}
+                          className="size-6 justify-center"
+                          alt={opcion.TipoCoin || ""}
+                        />
+                      ) : null}
                       <div className="flex flex-col pl-4 py-2">
                         <p className="font-semibold">{opcion.TipoCoin}</p>
                         <p
@@ -235,7 +271,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               )}
 
               {/* BLOOD STRIKE IF OPERATION */}
-              {data.data[0].product?.Nombre == "Blood Strike" && (
+              {data.data[0].product?.Nombre == "Bloodstrike" && (
                 <>
                   <label htmlFor="id" className="text-sm text-white">
                     ID de jugador:
@@ -314,6 +350,169 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                   />
                 </>
               )}
+
+              {/* CLASH ROYALE IF OPERATION */}
+              {data.data[0].product?.Nombre == "Clash Royale" && (
+                <>
+                  <label htmlFor="email" className="text-sm text-white">
+                    Correo electrónico de la cuenta:
+                  </label>
+                  <input
+                    value={emailVal}
+                    onChange={(e) => setEmailVal(e.target.value)}
+                    type="text"
+                    id="email"
+                    name="email"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Ingresa tu correo"
+                  />
+                  <label className="block text-sm text-white">
+                    Teléfono de contacto (WhatsApp):
+                  </label>
+                  <input
+                    type="number"
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className="w-full p-2 rounded bg-gray-700 text-white"
+                    placeholder="Ingresa tu teléfono"
+                    required
+                  />
+                </>
+              )}
+
+              {/* DELTA FORCE IF OPERATION */}
+              {data.data[0].product?.Nombre == "Delta Force" && (
+                <>
+                  <label htmlFor="email" className="text-sm text-white">
+                    Correo electrónico de la cuenta:
+                  </label>
+                  <input
+                    value={emailVal}
+                    onChange={(e) => setEmailVal(e.target.value)}
+                    type="text"
+                    id="email"
+                    name="email"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Ingresa tu correo"
+                  />
+                  <label className="block text-sm text-white">
+                    Teléfono de contacto (WhatsApp):
+                  </label>
+                  <input
+                    type="number"
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className="w-full p-2 rounded bg-gray-700 text-white"
+                    placeholder="Ingresa tu teléfono"
+                    required
+                  />
+                </>
+              )}
+
+              {/* EA FC MOBILE IF OPERATION */}
+              {data.data[0].product?.Nombre == "EA FC Mobile" && (
+                <>
+                  <label htmlFor="datos-cuenta" className="text-sm text-white">
+                    Datos de cuenta:
+                  </label>
+                  <input
+                    value={emailVal}
+                    onChange={(e) => setEmailVal(e.target.value)}
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Correo electrónico de la cuenta"
+                  />
+                  <input
+                    value={passwordVal}
+                    onChange={(e) => setPasswordVal(e.target.value)}
+                    type="password"
+                    id="password"
+                    name="password"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Contraseña de la cuenta"
+                  />
+                  <label htmlFor="iniciosesion" className="text-sm text-white">
+                    Metodo de inicio de sesión:
+                  </label>
+                  <select
+                    id="iniciosesion"
+                    name="iniciosesion"
+                    value={loginMethod}
+                    onChange={(e) => setLoginMethod(e.target.value)}
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                  >
+                    <option value="Facebook">Facebook</option>
+                    <option value="EA">EA</option>
+                    <option value="Google">Google</option>
+                  </select>
+                  <label className="block text-sm text-white">
+                    Teléfono de contacto (WhatsApp):
+                  </label>
+                  <input
+                    type="number"
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className="w-full p-2 rounded bg-gray-700 text-white"
+                    placeholder="Ingresa tu teléfono"
+                    required
+                  />
+                </>
+              )}
+
+              {/* WILD RIFT IF OPERATION */}
+              {data.data[0].product?.Nombre == "Wild Rift" && (
+                <>
+                  <label htmlFor="datos-cuenta" className="text-sm text-white">
+                    Datos de cuenta:
+                  </label>
+                  <input
+                    value={emailVal}
+                    onChange={(e) => setEmailVal(e.target.value)}
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Correo electrónico de la cuenta"
+                  />
+                  <input
+                    value={passwordVal}
+                    onChange={(e) => setPasswordVal(e.target.value)}
+                    type="password"
+                    id="password"
+                    name="password"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Contraseña de la cuenta"
+                  />
+                  <label htmlFor="iniciosesion" className="text-sm text-white">
+                    Metodo de inicio de sesión:
+                  </label>
+                  <select
+                    id="iniciosesion"
+                    name="iniciosesion"
+                    value={loginMethod}
+                    onChange={(e) => setLoginMethod(e.target.value)}
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                  >
+                    <option value="Facebook">Facebook</option>
+                    <option value="Riot">Riot</option>
+                    <option value="Google">Google</option>
+                  </select>
+                  <label className="block text-sm text-white">
+                    Teléfono de contacto (WhatsApp):
+                  </label>
+                  <input
+                    type="number"
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className="w-full p-2 rounded bg-gray-700 text-white"
+                    placeholder="Ingresa tu teléfono"
+                    required
+                  />
+                </>
+              )}
+
               {/* <label htmlFor="payment" className="text-sm text-white">
                 Método de pago:
               </label>
