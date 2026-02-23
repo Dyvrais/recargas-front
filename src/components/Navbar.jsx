@@ -68,19 +68,19 @@ export default function Navbar({ onCartClick }) {
         >
           <ul className="flex flex-col items-center space-y-4 py-2 font-Noto text-md text-yellow-500">
             <li className="w-full text-center  hover:bg-[#fec135] hover:text-white transition">
-              <a href="" onClick={() => setMenuOpen(false)}>
+              <a href="#juegos" onClick={() => setMenuOpen(false)}>
                 JUEGOS
               </a>
               <div className="w-3/4 m-auto border-t border-gray-300 mt-3"></div>
             </li>
             <li className="w-full text-center  hover:bg-[#fec135] hover:text-white transition">
-              <a href="" onClick={() => setMenuOpen(false)}>
-                GIFT CARDS
+              <a href="#wallets" onClick={() => setMenuOpen(false)}>
+                WALLETS
               </a>
               <div className="w-3/4 m-auto border-t border-gray-300 mt-3"></div>
             </li>
             <li className="w-full text-center  hover:bg-[#fec135] hover:text-white transition">
-              <a href="" onClick={() => setMenuOpen(false)}>
+              <a href="#streaming" onClick={() => setMenuOpen(false)}>
                 STREAMING
               </a>
             </li>

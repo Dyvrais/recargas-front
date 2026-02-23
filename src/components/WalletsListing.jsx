@@ -59,8 +59,8 @@ export default function WalletsListing() {
 
   return (
     <section
-      id="products"
-      className="flex w-screen flex-col justify-center items-center scroll-mt-20 scroll-smooth"
+      id="wallets"
+      className="flex w-screen flex-col mt-8 justify-center items-center scroll-mt-20 scroll-smooth"
     >
       <h2 className="font-Melon tracking-wide font-bold text-center text-white my-3 text-xl md:text-3xl">
         WALLETS
