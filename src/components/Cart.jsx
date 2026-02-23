@@ -1,17 +1,21 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import ReceiptModal from "./ReceiptModal";
 import { IoMdCloseCircle } from "react-icons/io";
 import { FaRegCopy } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
+import { IoCartOutline } from "react-icons/io5";
 
 const Cart = ({ isOpen, onClose }) => {
   const [cart, setCart] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
   const [submitError, setSubmitError] = useState(false);
+  const [receiptOpen, setReceiptOpen] = useState(false);
+  const [receiptData, setReceiptData] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("pago-movil");
-  const [telefono, setTelefono] = useState("");
   const [copyMessage, setCopyMessage] = useState("");
   const [referencia, setReferencia] = useState("");
+  const [idOrden, setIdOrden] = useState(null);
 
   const paymentListRef = useRef(null);
 
@@ -83,12 +87,7 @@ const Cart = ({ isOpen, onClose }) => {
     if (cart.length === 0) return;
 
     // Validate required fields
-    if (
-      !telefono ||
-      !telefono.toString().trim() ||
-      !referencia ||
-      !referencia.toString().trim()
-    ) {
+    if (!referencia || !referencia.toString().trim()) {
       setSubmitError(true);
       setSubmitMessage("Por favor completa los campos requeridos.");
       return;
@@ -110,7 +109,6 @@ const Cart = ({ isOpen, onClose }) => {
             data: {
               CarritoJSON: cart,
               Estado: "PENDIENTE",
-              Telefono: telefono ? parseInt(telefono) : null,
               Referencia: referencia ? parseInt(referencia) : null,
               MetodoPago: paymentMethod,
             },
@@ -125,17 +123,14 @@ const Cart = ({ isOpen, onClose }) => {
       const result = await response.json();
       console.log("Order submitted:", result);
 
-      // Clear cart
+      // Keep a snapshot for the receipt, then clear cart storage
+      setReceiptData(cart || []);
+      setReceiptOpen(true);
       setCart([]);
       localStorage.removeItem("cart");
+      const nroOrden = result.data.id - 1; // Strapi auto-increments after creation, so the new order ID is current max + 1
+      setIdOrden(nroOrden);
       setSubmitError(false);
-      setSubmitMessage("Orden enviada exitosamente!");
-      setTimeout(() => {
-        setSubmitMessage("");
-        onClose();
-      }, 2000);
-      setTelefono("");
-      setReferencia("");
     } catch (error) {
       console.error("Error submitting order:", error);
       setSubmitError(true);
@@ -162,7 +157,12 @@ const Cart = ({ isOpen, onClose }) => {
         >
           &times;
         </button>
-        <h2 className="text-xl font-bold mb-4">Carrito</h2>
+        <div className="text-center flex items-center justify-center">
+          <span className="text-xl font-bold mb-4">
+            Carrito
+            <IoCartOutline className="text-yellow-500 text-xl font-bold md:text-3xl inline-block ml-2" />
+          </span>
+        </div>
         {cart.length === 0 ? (
           <p>El carrito está vacío.</p>
         ) : (
@@ -214,7 +214,7 @@ const Cart = ({ isOpen, onClose }) => {
                   <ul ref={paymentListRef} className="list-none space-y-2">
                     <li className="font-semibold">Pago Móvil</li>
                     <li className="flex items-center justify-between">
-                      <span>Banco: Banco Plaza</span>
+                      <span>Banco: 0138 - Banco Plaza</span>
                       <button
                         className="text-sm bg-gray-600 px-2 py-1 rounded"
                         onClick={() => handleCopy("Banco Plaza")}
@@ -284,17 +284,6 @@ const Cart = ({ isOpen, onClose }) => {
               )} */}
               </div>
               <label className="block text-sm text-white">
-                Teléfono asociado a la cuenta:
-                <input
-                  type="number"
-                  value={telefono}
-                  onChange={(e) => setTelefono(e.target.value)}
-                  className="w-full p-2 rounded mt-2 bg-gray-700 text-white"
-                  placeholder="Ingresa el teléfono asociado a la cuenta"
-                  required
-                />
-              </label>
-              <label className="block text-sm text-white">
                 Ultimos 4 digitos de la referencia:
                 <input
                   type="text"
@@ -322,6 +311,19 @@ const Cart = ({ isOpen, onClose }) => {
             </form>
           </>
         )}
+        <ReceiptModal
+          isOpen={receiptOpen}
+          onClose={() => {
+            setReceiptOpen(false);
+            // close the cart modal as well when receipt is dismissed
+            onClose();
+            setReferencia("");
+          }}
+          data={receiptData}
+          orderId={idOrden}
+          paymentMethod={paymentMethod}
+          referencia={referencia}
+        />
       </div>
     </div>
   );

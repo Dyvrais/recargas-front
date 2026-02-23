@@ -32,19 +32,19 @@ export default function Navbar({ onCartClick }) {
 
           {/* Right: Desktop menu + Cart */}
           <div className="flex items-center space-x-4">
-            <ul className="hidden md:flex items-center justify-center space-x-6 md:space-x-10 font-Noto text-md font-medium text-white">
+            <ul className="hidden md:flex items-center justify-center space-x-6 md:space-x-10 font-Noto text-md font-bold text-white">
               <li className="text-shadow hover:underline hover:scale-110 transition-transform">
-                <a className="scroll-smooth" href="">
+                <a className="scroll-smooth" href="#juegos">
                   JUEGOS
                 </a>
               </li>
               <li className="text-shadow hover:underline hover:scale-110 transition-transform">
-                <a className="scroll-smooth" href="">
-                  GIFT CARDS
+                <a className="scroll-smooth" href="#wallets">
+                  WALLETS
                 </a>
               </li>
               <li className="text-shadow hover:underline hover:scale-110 transition-transform">
-                <a className="scroll-smooth" href="">
+                <a className="scroll-smooth" href="#streaming">
                   STREAMING
                 </a>
               </li>

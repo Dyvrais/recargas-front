@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import Modal from "./Modal";
-// Simple fetch function
-export default function Products() {
+
+export default function WalletsListing() {
   const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeId, setActiveId] = useState(null);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  //   const [search, setSearch] = useState("");
+  //   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const handleOpenModal = (id) => {
     setActiveId(id);
@@ -28,11 +28,11 @@ export default function Products() {
       .catch((err) => console.error("Products fetch error:", err));
   }, []);
 
-  // Debounce search input to avoid filtering on every keystroke
-  useEffect(() => {
-    const handle = setTimeout(() => setDebouncedSearch(search), 300);
-    return () => clearTimeout(handle);
-  }, [search]);
+  //   // Debounce search input
+  //   useEffect(() => {
+  //     const handle = setTimeout(() => setDebouncedSearch(search), 300);
+  //     return () => clearTimeout(handle);
+  //   }, [search]);
 
   if (!products.length)
     return (
@@ -63,32 +63,22 @@ export default function Products() {
       className="flex w-screen flex-col justify-center items-center scroll-mt-20 scroll-smooth"
     >
       <h2 className="font-Melon tracking-wide font-bold text-center text-white my-3 text-xl md:text-3xl">
-        CATALOGO
+        WALLETS
       </h2>
 
-      <input
-        type="search"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-[80%] max-w-md p-2 border border-gray-300 rounded-lg mb-4"
-        placeholder="🔍 Buscar productos..."
-      />
-
-      {/* Filtered list based on search (case-insensitive) and categoria === 'juegos' */}
+      {/* Only show products whose categoria is "wallets" */}
       {products.filter &&
         (() => {
-          const q = debouncedSearch.trim().toLowerCase();
+          {
+            /* const q = debouncedSearch.trim().toLowerCase(); */
+          }
 
-          // Limit to categoria === "juegos"
-          const juegosOnly = products.filter(
-            (p) => (p.categoria || "").toString().toLowerCase() === "juegos",
+          // First limit to categoria === "wallets"
+          const walletsOnly = products.filter(
+            (p) => (p.categoria || "").toString().toLowerCase() === "wallet",
           );
 
-          const filtered = q
-            ? juegosOnly.filter((p) =>
-                (p.Nombre || "").toLowerCase().includes(q),
-              )
-            : juegosOnly;
+          const filtered = walletsOnly;
 
           return (
             <div className="grid grid-cols-2 gap-4 place-items-center justify-center rounded-lg items-center md:grid-cols-4">
@@ -100,7 +90,7 @@ export default function Products() {
                   .map((product) => (
                     <button
                       onClick={() => handleOpenModal(product.id)}
-                      className="bg-gray-800 rounded-lg h-full hover:scale-105 transition-transform duration-200 w-fit"
+                      className="bg-gray-800 h-full rounded-lg hover:scale-105 transition-transform duration-200 w-fit"
                       key={product.id}
                     >
                       {product.Imagen?.[0]?.url ? (

@@ -14,6 +14,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
   const [telefono, setTelefono] = useState("");
   const [loginMethod, setLoginMethod] = useState("-");
   const [successMessage, setSuccessMessage] = useState("");
+  const [idZonaVal, setIdZonaVal] = useState("");
 
   useEffect(() => {
     fetch("https://ve.dolarapi.com/v1/dolares")
@@ -300,7 +301,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               )}
 
               {/* COD MOBILE IF OPERATION */}
-              {data.data[0].product?.Nombre == "COD Mobile" && (
+              {data.data[0].product?.Nombre == "Call of Duty Mobile" && (
                 <>
                   <label htmlFor="datos-cuenta" className="text-sm text-white">
                     Datos de cuenta:
@@ -513,6 +514,173 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                 </>
               )}
 
+              {/* MOBILE LEGENDS IF OPERATION */}
+              {data.data[0].product?.Nombre == "Mobile Legends" && (
+                <>
+                  <label htmlFor="id" className="text-sm text-white">
+                    ID de jugador:
+                  </label>
+                  <input
+                    value={userIdVal}
+                    onChange={(e) => setUserIdVal(e.target.value)}
+                    type="text"
+                    id="id"
+                    name="id"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Ingresa tu ID"
+                  />
+                  <label className="block text-sm text-white">
+                    Identificación de zona:
+                  </label>
+                  <input
+                    value={idZonaVal}
+                    onChange={(e) => setIdZonaVal(e.target.value)}
+                    type="text"
+                    id="idzona"
+                    name="idzona"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Ingresa tu ID de zona"
+                  />
+                  <label className="block text-sm text-white">
+                    Teléfono de contacto (WhatsApp):
+                  </label>
+                  <input
+                    type="number"
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className="w-full p-2 rounded bg-gray-700 text-white"
+                    placeholder="Ingresa tu teléfono"
+                    required
+                  />
+                </>
+              )}
+              {/* STREAMING IF OPERATION */}
+              {data.data[0].product?.categoria == "streaming" && (
+                <>
+                  <label className="block text-sm text-white">
+                    Teléfono de contacto (WhatsApp):
+                  </label>
+                  <input
+                    type="number"
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className="w-full p-2 rounded bg-gray-700 text-white"
+                    placeholder="Ingresa tu teléfono"
+                    required
+                  />
+                </>
+              )}
+
+              {/* BRAWL STARS AND CLASH OF CLANS IF OPERATION */}
+              {(data.data[0].product?.Nombre == "Brawl Stars" ||
+                data.data[0].product?.Nombre == "Clash of Clans") && (
+                <>
+                  <label className="block text-sm text-white">
+                    Teléfono de contacto (WhatsApp):
+                  </label>
+                  <input
+                    type="number"
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className="w-full p-2 rounded bg-gray-700 text-white"
+                    placeholder="Ingresa tu teléfono"
+                    required
+                  />
+                  <label htmlFor="datos-cuenta" className="text-sm text-white">
+                    Datos de cuenta:
+                  </label>
+                  <input
+                    value={emailVal}
+                    onChange={(e) => setEmailVal(e.target.value)}
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Correo Supercell"
+                  />
+                </>
+              )}
+
+              {/* TIKTOK IF OPERATION */}
+              {data.data[0].product?.Nombre == "TikTok" && (
+                <>
+                  <label className="block text-sm text-white">
+                    Teléfono de contacto (WhatsApp):
+                  </label>
+                  <input
+                    type="number"
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className="w-full p-2 rounded bg-gray-700 text-white"
+                    placeholder="Ingresa tu teléfono"
+                    required
+                  />
+                  <label htmlFor="datos-cuenta" className="text-sm text-white">
+                    Datos de cuenta:
+                  </label>
+                  <input
+                    value={emailVal}
+                    onChange={(e) => setEmailVal(e.target.value)}
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Correo electrónico de la cuenta"
+                  />
+                  <input
+                    value={passwordVal}
+                    onChange={(e) => setPasswordVal(e.target.value)}
+                    type="password"
+                    id="password"
+                    name="password"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Contraseña de la cuenta"
+                  />
+                  <label htmlFor="iniciosesion" className="text-sm text-white">
+                    Metodo de inicio de sesión:
+                  </label>
+                  <select
+                    id="iniciosesion"
+                    name="iniciosesion"
+                    value={loginMethod}
+                    onChange={(e) => setLoginMethod(e.target.value)}
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                  >
+                    <option value="Facebook">Facebook</option>
+                    <option value="TikTok">TikTok</option>
+                    <option value="Google">Google</option>
+                  </select>
+                </>
+              )}
+
+              {/* ZINLI IF OPERATION */}
+              {data.data[0].product?.Nombre == "Zinli" && (
+                <>
+                  <label className="block text-sm text-white">
+                    Teléfono de contacto (WhatsApp):
+                  </label>
+                  <input
+                    type="number"
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className="w-full p-2 rounded bg-gray-700 text-white"
+                    placeholder="Ingresa tu teléfono"
+                    required
+                  />
+                  <label htmlFor="datos-cuenta" className="text-sm text-white">
+                    Correo asociado a la cuenta:
+                  </label>
+                  <input
+                    value={emailVal}
+                    onChange={(e) => setEmailVal(e.target.value)}
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Correo electrónico de la cuenta"
+                  />
+                </>
+              )}
               {/* <label htmlFor="payment" className="text-sm text-white">
                 Método de pago:
               </label>
