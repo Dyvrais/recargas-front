@@ -724,6 +724,8 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     CorreoCuenta: emailVal,
                     ContraseñaCuenta: passwordVal,
                     MetodoInicioSesion: loginMethod,
+                    TelefonoContacto: telefono,
+                    IDZona: idZonaVal,
                     FechaAgregado: new Date().toISOString(),
                   };
 
