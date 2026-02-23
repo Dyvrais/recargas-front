@@ -174,6 +174,11 @@ const Cart = ({ isOpen, onClose }) => {
                   className="flex justify-around text-sm items-center bg-gray-700 p-2 rounded"
                 >
                   <div>
+                    <img
+                      src={item.Imagen}
+                      alt={item.NombreProducto}
+                      className="size-8 object-contain"
+                    />
                     <p className="font-semibold">
                       {item.NombreProducto} - {item.CoinSeleccionada}
                     </p>

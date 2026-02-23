@@ -138,22 +138,43 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                 {opcionesSorted.map((opcion) => {
                   const getImageUrl = (imgField) => {
                     if (!imgField) return null;
+                    const base = (import.meta.env.VITE_API_URL || "").replace(
+                      /\/$/,
+                      "",
+                    );
+
                     // If field is a string URL
-                    if (typeof imgField === "string") return imgField;
+                    if (typeof imgField === "string") {
+                      return imgField.startsWith("/")
+                        ? base + imgField
+                        : imgField;
+                    }
+
                     // Strapi v4 shape: { data: { attributes: { url }}} or array
                     if (imgField.data) {
                       const d = imgField.data;
-                      if (Array.isArray(d) && d[0]?.attributes?.url)
-                        return d[0].attributes.url;
-                      if (d.attributes?.url) return d.attributes.url;
+                      const url = Array.isArray(d)
+                        ? d[0]?.attributes?.url
+                        : d.attributes?.url;
+                      if (url) return url.startsWith("/") ? base + url : url;
                     }
+
                     // Legacy shape or direct object with url
-                    if (Array.isArray(imgField) && imgField[0]?.url)
-                      return imgField[0].url;
-                    if (imgField.url) return imgField.url;
+                    if (Array.isArray(imgField) && imgField[0]?.url) {
+                      const url = imgField[0].url;
+                      return url.startsWith("/") ? base + url : url;
+                    }
+                    if (imgField.url) {
+                      const url = imgField.url;
+                      return url.startsWith("/") ? base + url : url;
+                    }
+
                     // Try attributes directly
-                    if (imgField.attributes?.url)
-                      return imgField.attributes.url;
+                    if (imgField.attributes?.url) {
+                      const url = imgField.attributes.url;
+                      return url.startsWith("/") ? base + url : url;
+                    }
+
                     return null;
                   };
 

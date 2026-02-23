@@ -143,12 +143,17 @@ export default function Gallery() {
         {images.length ? (
           images.map((item) => (
             <SwiperSlide key={item.id}>
-              <img
-                src={item.src}
-                alt="Galeria"
-                loading="lazy"
-                className="w-screen h-[250px] md:h-[350px] object-contain"
-              />
+              <a
+                href="https://api.whatsapp.com/send/?phone=%2B584122188263&text&type=phone_number&app_absent=0"
+                target="_blank"
+              >
+                <img
+                  src={item.src}
+                  alt="Galeria"
+                  loading="lazy"
+                  className="w-screen h-[250px] md:h-[350px] object-contain"
+                />
+              </a>
             </SwiperSlide>
           ))
         ) : (
