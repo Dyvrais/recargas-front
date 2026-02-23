@@ -215,6 +215,44 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               className="flex flex-col gap-2 my-4"
               onSubmit={(e) => e.preventDefault()}
             >
+              {data.data[0].product?.Nombre && (
+                <>
+                  <label htmlFor="datos-cuenta" className="text-sm text-white">
+                    Datos de cuenta:
+                  </label>
+                  <input
+                    value={emailVal}
+                    onChange={(e) => setEmailVal(e.target.value)}
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Correo electrónico de la cuenta"
+                  />
+                  <input
+                    value={passwordVal}
+                    onChange={(e) => setPasswordVal(e.target.value)}
+                    type="password"
+                    id="password"
+                    name="password"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Contraseña de la cuenta"
+                  />
+
+                  <label className="block text-sm text-white">
+                    Teléfono de contacto (WhatsApp):
+                  </label>
+                  <input
+                    type="number"
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className="w-full p-2 rounded bg-gray-700 text-white"
+                    placeholder="Ingresa tu teléfono"
+                    required
+                  />
+                </>
+              )}
+
               {/* FREE FIRE IF OPERATION */}
               {data.data[0].product?.Nombre == "Free Fire" && (
                 <>
