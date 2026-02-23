@@ -215,7 +215,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               className="flex flex-col gap-2 my-4"
               onSubmit={(e) => e.preventDefault()}
             >
-              {data.data[0].product?.Nombre && (
+              {data.data[0].product?.Nombre == "Steam" && (
                 <>
                   <label htmlFor="datos-cuenta" className="text-sm text-white">
                     Datos de cuenta:
