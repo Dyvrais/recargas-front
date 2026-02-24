@@ -15,6 +15,8 @@ const Modal = ({ isOpen, onClose, itemId }) => {
   const [loginMethod, setLoginMethod] = useState("-");
   const [successMessage, setSuccessMessage] = useState("");
   const [idZonaVal, setIdZonaVal] = useState("");
+  const formRef = useRef(null);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
     fetch("https://ve.dolarapi.com/v1/dolares")
@@ -83,6 +85,39 @@ const Modal = ({ isOpen, onClose, itemId }) => {
     };
   }, [isOpen, itemId]);
 
+  const validateFormFields = () => {
+    const form = formRef.current;
+    if (!form) return false;
+    const elements = Array.from(form.elements || []);
+    // Only validate fields that are explicitly required
+    for (const el of elements) {
+      if (!el.required) continue;
+      const tag = (el.tagName || "").toUpperCase();
+      const type = (el.type || "").toLowerCase();
+      if (
+        tag === "BUTTON" ||
+        type === "button" ||
+        type === "submit" ||
+        type === "hidden"
+      )
+        continue;
+      if (el.disabled) continue;
+
+      if (type === "radio" || type === "checkbox") {
+        const group = form.querySelectorAll(`input[name="${el.name}"]`);
+        if (group.length > 0) {
+          const anyChecked = Array.from(group).some((g) => g.checked);
+          if (!anyChecked) return false;
+          continue;
+        }
+      }
+
+      const val = el.value;
+      if (!String(val || "").trim()) return false;
+    }
+    return true;
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -111,7 +146,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               />
               <path
                 d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                fill="#145cfa"
+                fill="#eab308"
               />
             </svg>
             <span className="sr-only">Loading...</span>
@@ -135,85 +170,125 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               </h2>
 
               <div className="my-2 grid grid-cols-1 gap-4 ">
-                {opcionesSorted.map((opcion) => {
-                  const getImageUrl = (imgField) => {
-                    if (!imgField) return null;
-                    const base = (import.meta.env.VITE_API_URL || "").replace(
-                      /\/$/,
-                      "",
+                {(() => {
+                  const productName = data.data[0].product?.Nombre;
+                  let options = opcionesSorted;
+                  if (productName === "Free Fire Pases y Tarjetas") {
+                    const priority = [
+                      "Tarjeta semanal básica",
+                      "Tarjeta semanal",
+                      "Tarjeta mensual",
+                      "Pase booyah",
+                      "Paquete de nivel (completo)",
+                    ];
+                    options = [...opcionesSorted].sort((a, b) => {
+                      const nameA = (a.TipoCoin || "").toString();
+                      const nameB = (b.TipoCoin || "").toString();
+                      const ia = priority.indexOf(nameA);
+                      const ib = priority.indexOf(nameB);
+                      if (ia !== -1 || ib !== -1) {
+                        if (ia === -1) return 1;
+                        if (ib === -1) return -1;
+                        return ia - ib;
+                      }
+                      return 0;
+                    });
+                  }
+
+                  if (productName === "Mobile Legends") {
+                    const priority = ["Pase semanal de la MLBB"];
+                    options = [...opcionesSorted].sort((a, b) => {
+                      const nameA = (a.TipoCoin || "").toString();
+                      const nameB = (b.TipoCoin || "").toString();
+                      const ia = priority.indexOf(nameA);
+                      const ib = priority.indexOf(nameB);
+                      if (ia !== -1 || ib !== -1) {
+                        if (ia === -1) return -1;
+                        if (ib === -1) return 1;
+                        return ia - ib;
+                      }
+                      return 0;
+                    });
+                  }
+
+                  return options.map((opcion) => {
+                    const getImageUrl = (imgField) => {
+                      if (!imgField) return null;
+                      const base = (import.meta.env.VITE_API_URL || "").replace(
+                        /\/$/,
+                        "",
+                      );
+
+                      if (typeof imgField === "string") {
+                        return imgField.startsWith("/")
+                          ? base + imgField
+                          : imgField;
+                      }
+
+                      if (imgField.data) {
+                        const d = imgField.data;
+                        const url = Array.isArray(d)
+                          ? d[0]?.attributes?.url
+                          : d.attributes?.url;
+                        if (url) return url.startsWith("/") ? base + url : url;
+                      }
+
+                      if (Array.isArray(imgField) && imgField[0]?.url) {
+                        const url = imgField[0].url;
+                        return url.startsWith("/") ? base + url : url;
+                      }
+                      if (imgField.url) {
+                        const url = imgField.url;
+                        return url.startsWith("/") ? base + url : url;
+                      }
+
+                      if (imgField.attributes?.url) {
+                        const url = imgField.attributes.url;
+                        return url.startsWith("/") ? base + url : url;
+                      }
+
+                      return null;
+                    };
+
+                    const bsPrice =
+                      Math.trunc(opcion.Precio * DolarParalelo * 100) / 100;
+                    const selected = selectedOptionId === opcion.id;
+                    const imgUrl = getImageUrl(opcion.ImagenCoin);
+
+                    return (
+                      <button
+                        key={opcion.id}
+                        type="button"
+                        onClick={() => setSelectedOptionId(opcion.id)}
+                        className={`border flex rounded-lg text-sm p-2 items-center text-left ${selected ? "bg-yellow-400 text-black" : "bg-gray-900 text-white"}`}
+                      >
+                        {imgUrl ? (
+                          <img
+                            src={imgUrl}
+                            className="size-6 justify-center"
+                            alt={opcion.TipoCoin || ""}
+                          />
+                        ) : null}
+                        <div className="flex flex-col pl-4 py-2">
+                          <p className="font-semibold">{opcion.TipoCoin}</p>
+                          <p
+                            className={`${selected ? "font-bold text-black" : "text-yellow-500"}`}
+                          >
+                            {bsPrice} Bs.
+                          </p>
+                        </div>
+                      </button>
                     );
-
-                    // If field is a string URL
-                    if (typeof imgField === "string") {
-                      return imgField.startsWith("/")
-                        ? base + imgField
-                        : imgField;
-                    }
-
-                    // Strapi v4 shape: { data: { attributes: { url }}} or array
-                    if (imgField.data) {
-                      const d = imgField.data;
-                      const url = Array.isArray(d)
-                        ? d[0]?.attributes?.url
-                        : d.attributes?.url;
-                      if (url) return url.startsWith("/") ? base + url : url;
-                    }
-
-                    // Legacy shape or direct object with url
-                    if (Array.isArray(imgField) && imgField[0]?.url) {
-                      const url = imgField[0].url;
-                      return url.startsWith("/") ? base + url : url;
-                    }
-                    if (imgField.url) {
-                      const url = imgField.url;
-                      return url.startsWith("/") ? base + url : url;
-                    }
-
-                    // Try attributes directly
-                    if (imgField.attributes?.url) {
-                      const url = imgField.attributes.url;
-                      return url.startsWith("/") ? base + url : url;
-                    }
-
-                    return null;
-                  };
-
-                  const bsPrice =
-                    Math.trunc(opcion.Precio * DolarParalelo * 100) / 100;
-                  const selected = selectedOptionId === opcion.id;
-                  const imgUrl = getImageUrl(opcion.ImagenCoin);
-
-                  return (
-                    <button
-                      key={opcion.id}
-                      type="button"
-                      onClick={() => setSelectedOptionId(opcion.id)}
-                      className={`border flex rounded-lg text-sm p-2 items-center text-left ${selected ? "bg-yellow-400 text-black" : "bg-gray-900 text-white"}`}
-                    >
-                      {imgUrl ? (
-                        <img
-                          src={imgUrl}
-                          className="size-6 justify-center"
-                          alt={opcion.TipoCoin || ""}
-                        />
-                      ) : null}
-                      <div className="flex flex-col pl-4 py-2">
-                        <p className="font-semibold">{opcion.TipoCoin}</p>
-                        <p
-                          className={`${selected ? "font-bold text-black" : "text-yellow-500"}`}
-                        >
-                          {bsPrice} Bs.
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })}
+                  });
+                })()}
               </div>
             </div>
 
             <form
+              ref={formRef}
               className="flex flex-col gap-2 my-4"
               onSubmit={(e) => e.preventDefault()}
+              onChange={() => setIsFormValid(validateFormFields())}
             >
               {data.data[0].product?.Nombre == "Steam" && (
                 <>
@@ -754,6 +829,11 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               <button
                 id="cart"
                 onClick={() => {
+                  // Validate form before allowing add-to-cart
+                  if (!validateFormFields()) {
+                    setError("Por favor completa los campos requeridos.");
+                    return;
+                  }
                   const opcion = data.data.find(
                     (o) => o.id === selectedOptionId,
                   );
@@ -778,6 +858,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     MetodoInicioSesion: loginMethod,
                     TelefonoContacto: telefono,
                     IDZona: idZonaVal,
+                    ImagenCoin: opcion.ImagenCoin,
                     FechaAgregado: new Date().toISOString(),
                   };
 
@@ -803,7 +884,8 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     setError("No se pudo guardar el carrito.");
                   }
                 }}
-                className="bg-yellow-500 py-1 px-2 rounded-lg text-black"
+                disabled={!isFormValid || !selectedOptionId}
+                className="bg-yellow-500 py-1 px-2 rounded-lg text-black disabled:opacity-50"
               >
                 Añadir al carrito
               </button>

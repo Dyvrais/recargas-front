@@ -94,9 +94,24 @@ export default function Products() {
             <div className="grid grid-cols-2 gap-4 place-items-center justify-center rounded-lg items-center md:grid-cols-4">
               {filtered.length ? (
                 [...filtered]
-                  .sort((a, b) =>
-                    (a.Nombre || "").localeCompare(b.Nombre || ""),
-                  )
+                  .sort((a, b) => {
+                    const priority = [
+                      "Free Fire",
+                      "Roblox",
+                      "Free Fire Pases y Tarjetas",
+                      "Bloodstrike",
+                    ];
+                    const nameA = (a.Nombre || "").toString();
+                    const nameB = (b.Nombre || "").toString();
+                    const ia = priority.indexOf(nameA);
+                    const ib = priority.indexOf(nameB);
+                    if (ia !== -1 || ib !== -1) {
+                      if (ia === -1) return 1;
+                      if (ib === -1) return -1;
+                      return ia - ib;
+                    }
+                    return nameA.localeCompare(nameB);
+                  })
                   .map((product) => (
                     <button
                       onClick={() => handleOpenModal(product.id)}

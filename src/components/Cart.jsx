@@ -18,6 +18,8 @@ const Cart = ({ isOpen, onClose }) => {
   const [idOrden, setIdOrden] = useState(null);
 
   const paymentListRef = useRef(null);
+  const formRef = useRef(null);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const copyToClipboard = async (text) => {
     try {
@@ -60,6 +62,39 @@ const Cart = ({ isOpen, onClose }) => {
     await copyToClipboard(combined);
   };
 
+  const validateFormFields = () => {
+    const form = formRef.current;
+    if (!form) return false;
+    const elements = Array.from(form.elements || []);
+    // Only validate fields that are explicitly required
+    for (const el of elements) {
+      if (!el.required) continue;
+      const tag = (el.tagName || "").toUpperCase();
+      const type = (el.type || "").toLowerCase();
+      if (
+        tag === "BUTTON" ||
+        type === "button" ||
+        type === "submit" ||
+        type === "hidden"
+      )
+        continue;
+      if (el.disabled) continue;
+
+      if (type === "radio" || type === "checkbox") {
+        const group = form.querySelectorAll(`input[name="${el.name}"]`);
+        if (group.length > 0) {
+          const anyChecked = Array.from(group).some((g) => g.checked);
+          if (!anyChecked) return false;
+          continue;
+        }
+      }
+
+      const val = el.value;
+      if (!String(val || "").trim()) return false;
+    }
+    return true;
+  };
+
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCart(storedCart);
@@ -88,8 +123,8 @@ const Cart = ({ isOpen, onClose }) => {
 
     if (cart.length === 0) return;
 
-    // Validate required fields
-    if (!referencia || !referencia.toString().trim()) {
+    // Validate all form fields; prevent submission if any are empty
+    if (!validateFormFields()) {
       setSubmitError(true);
       setSubmitMessage("Por favor completa los campos requeridos.");
       return;
@@ -198,7 +233,11 @@ const Cart = ({ isOpen, onClose }) => {
             <div className="mt-3 text-white font-semibold">
               Monto Total: {montoTotal.toFixed(2)} Bs.
             </div>
-            <form className="mt-4 space-y-2">
+            <form
+              ref={formRef}
+              onChange={() => setIsFormValid(validateFormFields())}
+              className="mt-4 space-y-2"
+            >
               <label htmlFor="payment" className="block text-sm text-white">
                 Método de pago:
               </label>
@@ -304,7 +343,7 @@ const Cart = ({ isOpen, onClose }) => {
               </label>
               <button
                 onClick={submitOrder}
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isFormValid}
                 type="submit"
                 className="mt-4  bg-yellow-500 m-auto text-center text-black py-2 px-4 rounded disabled:opacity-50"
               >
