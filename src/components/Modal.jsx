@@ -858,7 +858,6 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     MetodoInicioSesion: loginMethod,
                     TelefonoContacto: telefono,
                     IDZona: idZonaVal,
-                    ImagenCoin: opcion.ImagenCoin,
                     FechaAgregado: new Date().toISOString(),
                   };
 
