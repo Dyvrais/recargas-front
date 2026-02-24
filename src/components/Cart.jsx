@@ -210,11 +210,6 @@ const Cart = ({ isOpen, onClose }) => {
                   key={index}
                   className="flex justify-around text-sm items-center bg-gray-700 p-2 rounded"
                 >
-                  <img
-                    src={item.ImagenCoin}
-                    alt={item.NombreProducto}
-                    className="w-10 h-10 object-contain"
-                  />
                   <div className="">
                     <p className="font-semibold">
                       {item.NombreProducto} - {item.CoinSeleccionada}
