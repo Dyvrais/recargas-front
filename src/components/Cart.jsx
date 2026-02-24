@@ -55,7 +55,9 @@ const Cart = ({ isOpen, onClose }) => {
   const handleCopyAll = async () => {
     const text = paymentListRef.current?.innerText?.trim() || "";
     if (!text) return;
-    await copyToClipboard(text);
+    const totalText = `Monto Total: ${montoTotal.toFixed(2)} Bs.`;
+    const combined = `${text}\n${totalText}`;
+    await copyToClipboard(combined);
   };
 
   useEffect(() => {
@@ -173,7 +175,12 @@ const Cart = ({ isOpen, onClose }) => {
                   key={index}
                   className="flex justify-around text-sm items-center bg-gray-700 p-2 rounded"
                 >
-                  <div>
+                  <img
+                    src={item.ImagenCoin}
+                    alt={item.NombreProducto}
+                    className="w-10 h-10 object-contain"
+                  />
+                  <div className="">
                     <p className="font-semibold">
                       {item.NombreProducto} - {item.CoinSeleccionada}
                     </p>
@@ -245,7 +252,7 @@ const Cart = ({ isOpen, onClose }) => {
                       className="mt-2 m-auto flex items-center gap-1 text-md bg-gray-600 px-2 py-1 rounded"
                     >
                       <FaRegCopy />
-                      <span className="ml-2">Copiar todo</span>
+                      <span className="ml-2">Copiar datos</span>
                     </button>
                   </ul>
                 )}

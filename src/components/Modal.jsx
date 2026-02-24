@@ -215,50 +215,48 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               className="flex flex-col gap-2 my-4"
               onSubmit={(e) => e.preventDefault()}
             >
-              {data.data[0].product?.Nombre == "Steam" ||
-                (data.data[0].product?.Nombre == "steam" && (
-                  <>
-                    <label
-                      htmlFor="datos-cuenta"
-                      className="text-sm text-white"
-                    >
-                      Datos de cuenta:
-                    </label>
-                    <input
-                      value={emailVal}
-                      onChange={(e) => setEmailVal(e.target.value)}
-                      type="email"
-                      id="email"
-                      name="email"
-                      className="p-2 rounded-lg bg-gray-700 text-white"
-                      placeholder="Correo electrónico de la cuenta"
-                    />
-                    <input
-                      value={passwordVal}
-                      onChange={(e) => setPasswordVal(e.target.value)}
-                      type="password"
-                      id="password"
-                      name="password"
-                      className="p-2 rounded-lg bg-gray-700 text-white"
-                      placeholder="Contraseña de la cuenta"
-                    />
+              {data.data[0].product?.Nombre == "Steam" && (
+                <>
+                  <label htmlFor="datos-cuenta" className="text-sm text-white">
+                    Datos de cuenta:
+                  </label>
+                  <input
+                    value={userIdVal}
+                    onChange={(e) => setUserIdVal(e.target.value)}
+                    type="text"
+                    id="userId"
+                    name="userId"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Usuario de la cuenta"
+                  />
+                  <input
+                    value={passwordVal}
+                    onChange={(e) => setPasswordVal(e.target.value)}
+                    type="password"
+                    id="password"
+                    name="password"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Contraseña de la cuenta"
+                  />
 
-                    <label className="block text-sm text-white">
-                      Teléfono de contacto (WhatsApp):
-                    </label>
-                    <input
-                      type="number"
-                      value={telefono}
-                      onChange={(e) => setTelefono(e.target.value)}
-                      className="w-full p-2 rounded bg-gray-700 text-white"
-                      placeholder="Ingresa tu teléfono"
-                      required
-                    />
-                  </>
-                ))}
+                  <label className="block text-sm text-white">
+                    Teléfono de contacto (WhatsApp):
+                  </label>
+                  <input
+                    type="number"
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className="w-full p-2 rounded bg-gray-700 text-white"
+                    placeholder="Ingresa tu teléfono"
+                    required
+                  />
+                </>
+              )}
 
               {/* FREE FIRE IF OPERATION */}
-              {data.data[0].product?.Nombre == "Free Fire" && (
+              {(data.data[0].product?.Nombre == "Free Fire" ||
+                data.data[0].product?.Nombre ==
+                  "Free Fire Pases y Tarjetas") && (
                 <>
                   <label htmlFor="id" className="text-sm text-white">
                     ID de jugador:
@@ -292,15 +290,6 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                   <label htmlFor="datos-cuenta" className="text-sm text-white">
                     Datos de cuenta:
                   </label>
-                  <input
-                    value={userIdVal}
-                    onChange={(e) => setUserIdVal(e.target.value)}
-                    type="text"
-                    id="id"
-                    name="id"
-                    className="p-2 rounded-lg bg-gray-700 text-white"
-                    placeholder="ID de la cuenta"
-                  />
                   <input
                     value={emailVal}
                     onChange={(e) => setEmailVal(e.target.value)}
@@ -419,7 +408,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               {data.data[0].product?.Nombre == "Clash Royale" && (
                 <>
                   <label htmlFor="email" className="text-sm text-white">
-                    Correo electrónico de la cuenta:
+                    Datos de la cuenta:
                   </label>
                   <input
                     value={emailVal}
@@ -428,7 +417,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     id="email"
                     name="email"
                     className="p-2 rounded-lg bg-gray-700 text-white"
-                    placeholder="Ingresa tu correo"
+                    placeholder="Ingresa tu correo de Supercell"
                   />
                   <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
@@ -448,16 +437,16 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               {data.data[0].product?.Nombre == "Delta Force" && (
                 <>
                   <label htmlFor="email" className="text-sm text-white">
-                    Correo electrónico de la cuenta:
+                    ID de jugador:
                   </label>
                   <input
-                    value={emailVal}
-                    onChange={(e) => setEmailVal(e.target.value)}
+                    value={userIdVal}
+                    onChange={(e) => setUserIdVal(e.target.value)}
                     type="text"
                     id="email"
                     name="email"
                     className="p-2 rounded-lg bg-gray-700 text-white"
-                    placeholder="Ingresa tu correo"
+                    placeholder="Ingresa tu ID"
                   />
                   <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
@@ -659,7 +648,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     id="email"
                     name="email"
                     className="p-2 rounded-lg bg-gray-700 text-white"
-                    placeholder="Correo Supercell"
+                    placeholder="Ingresa tu correo Supercell"
                   />
                 </>
               )}
@@ -682,13 +671,13 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Datos de cuenta:
                   </label>
                   <input
-                    value={emailVal}
-                    onChange={(e) => setEmailVal(e.target.value)}
-                    type="email"
-                    id="email"
-                    name="email"
+                    value={userIdVal}
+                    onChange={(e) => setUserIdVal(e.target.value)}
+                    type="text"
+                    id="userId"
+                    name="userId"
                     className="p-2 rounded-lg bg-gray-700 text-white"
-                    placeholder="Correo electrónico de la cuenta"
+                    placeholder="Correo electrónico/usuario de la cuenta"
                   />
                   <input
                     value={passwordVal}
@@ -731,7 +720,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     required
                   />
                   <label htmlFor="datos-cuenta" className="text-sm text-white">
-                    Correo asociado a la cuenta:
+                    Datos de Zinli:
                   </label>
                   <input
                     value={emailVal}
@@ -740,7 +729,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     id="email"
                     name="email"
                     className="p-2 rounded-lg bg-gray-700 text-white"
-                    placeholder="Correo electrónico de la cuenta"
+                    placeholder="Correo electrónico asociado a tu cuenta de Zinli"
                   />
                 </>
               )}
