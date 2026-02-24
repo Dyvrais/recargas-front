@@ -844,7 +844,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     return;
                   }
                   const productName = data.data[0].product?.Nombre || "";
-                  const cartItem = {
+                  const cartItemv2 = {
                     IDProducto: itemId,
                     IDCoin: opcion.id,
                     NombreProducto: productName,
@@ -865,7 +865,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     const existing = JSON.parse(
                       localStorage.getItem("cart") || "[]",
                     );
-                    existing.push(cartItem);
+                    existing.push(cartItemv2);
                     localStorage.setItem("cart", JSON.stringify(existing));
                     setSuccessMessage("Añadido al carrito");
                     setError(null);
