@@ -327,7 +327,7 @@ const Cart = ({ isOpen, onClose }) => {
               <label className="block text-sm text-white">
                 Ultimos 4 digitos de la referencia:
                 <input
-                  type="text"
+                  type="number"
                   value={referencia}
                   maxLength={4}
                   onChange={(e) => setReferencia(e.target.value)}
