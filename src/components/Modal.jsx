@@ -853,9 +853,9 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     PrecioBolivares:
                       Math.trunc(opcion.Precio * DolarParalelo * 100) / 100,
                     IDdelUsuario: userIdVal,
-                    CorreoCuenta: emailVal,
-                    ContraseñaCuenta: passwordVal,
-                    MetodoInicioSesion: loginMethod,
+                    CorreoDeCuenta: emailVal,
+                    ContraseñaDeCuenta: passwordVal,
+                    MetodoDeInicioSesion: loginMethod,
                     TelefonoDeContacto: telefono,
                     IDZona: idZonaVal,
                     FechaAgregado: new Date().toISOString(),
