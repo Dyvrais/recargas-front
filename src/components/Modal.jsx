@@ -846,8 +846,8 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                   const productName = data.data[0].product?.Nombre || "";
                   const cartItem = {
                     IDProducto: itemId,
-                    NombreProducto: productName,
                     IDCoin: opcion.id,
+                    NombreProducto: productName,
                     CoinSeleccionada: opcion.TipoCoin,
                     PrecioDolares: opcion.Precio,
                     PrecioBolivares:
@@ -856,7 +856,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     CorreoCuenta: emailVal,
                     ContraseñaCuenta: passwordVal,
                     MetodoInicioSesion: loginMethod,
-                    TelefonoContacto: telefono,
+                    TelefonoDeContacto: telefono,
                     IDZona: idZonaVal,
                     FechaAgregado: new Date().toISOString(),
                   };
@@ -879,6 +879,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     setEmailVal("");
                     setPasswordVal("");
                     setUserIdVal("");
+                    setIdZonaVal("");
                   } catch (e) {
                     setError("No se pudo guardar el carrito.");
                   }
