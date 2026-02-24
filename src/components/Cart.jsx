@@ -144,7 +144,7 @@ const Cart = ({ isOpen, onClose }) => {
           },
           body: JSON.stringify({
             data: {
-              "Carrito-JSON": cart,
+              CarritoJSON: cart,
               Estado: "PENDIENTE",
               Referencia: referencia ? parseInt(referencia) : null,
               MetodoPago: paymentMethod,
