@@ -1,5 +1,7 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useMemo } from "react";
+import useSWR from "swr";
 import { Swiper, SwiperSlide } from "swiper/react";
+import CachedImg from "../lib/CachedImg";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -7,27 +9,7 @@ import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 
 export default function Gallery() {
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    let mounted = true;
-    const fetchGallery = async () => {
-      try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/galerias?populate=*`,
-        );
-        if (!res.ok) return;
-        const json = await res.json();
-        if (mounted) setData(json);
-      } catch (e) {
-        // ignore
-      }
-    };
-    fetchGallery();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const { data } = useSWR("/api/galerias?populate=*");
 
   const resolveImageUrl = (field) => {
     if (!field) return null;
@@ -147,7 +129,7 @@ export default function Gallery() {
                 href="https://api.whatsapp.com/send/?phone=%2B584122188263&text&type=phone_number&app_absent=0"
                 target="_blank"
               >
-                <img
+                <CachedImg
                   src={item.src}
                   alt="Galeria"
                   loading="lazy"

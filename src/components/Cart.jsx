@@ -49,6 +49,19 @@ const Cart = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleReferenciaChange = (e) => {
+    const input = e.target.value.replace(/\D/g, "");
+    const truncated = input.slice(0, 4);
+    setReferencia(truncated);
+  };
+
+  const strictValidateCart = () => {
+    // require referencia and keep existing element-level checks
+    const ref = String(referencia || "").trim();
+    if (!ref) return false;
+    return validateFormFields();
+  };
+
   const handleCopy = async (text) => {
     if (!text) return;
     await copyToClipboard(text);
@@ -68,7 +81,10 @@ const Cart = ({ isOpen, onClose }) => {
     const elements = Array.from(form.elements || []);
     // Only validate fields that are explicitly required
     for (const el of elements) {
-      if (!el.required) continue;
+      const isMarkedRequired =
+        el.required ||
+        (el.classList && el.classList.contains("required-field"));
+      if (!isMarkedRequired) continue;
       const tag = (el.tagName || "").toUpperCase();
       const type = (el.type || "").toLowerCase();
       if (
@@ -124,7 +140,7 @@ const Cart = ({ isOpen, onClose }) => {
     if (cart.length === 0) return;
 
     // Validate all form fields; prevent submission if any are empty
-    if (!validateFormFields()) {
+    if (!validateFormFields() || !strictValidateCart()) {
       setSubmitError(true);
       setSubmitMessage("Por favor completa los campos requeridos.");
       return;
@@ -230,7 +246,9 @@ const Cart = ({ isOpen, onClose }) => {
             </div>
             <form
               ref={formRef}
-              onChange={() => setIsFormValid(validateFormFields())}
+              onChange={() =>
+                setIsFormValid(validateFormFields() && strictValidateCart())
+              }
               className="mt-4 space-y-2"
             >
               <label htmlFor="payment" className="block text-sm text-white">
@@ -276,7 +294,7 @@ const Cart = ({ isOpen, onClose }) => {
                       <span>Telefono: 0412-6310088</span>
                       <button
                         className="text-sm bg-gray-600 px-2 py-1 rounded"
-                        onClick={() => handleCopy("04126310088")}
+                        onClick={() => handleCopy("0412-6310088")}
                       >
                         <FaRegCopy />
                       </button>
@@ -330,7 +348,7 @@ const Cart = ({ isOpen, onClose }) => {
                   type="number"
                   value={referencia}
                   maxLength={4}
-                  onChange={(e) => setReferencia(e.target.value)}
+                  onChange={handleReferenciaChange}
                   className="w-full p-2 rounded mt-2 bg-gray-700 text-white"
                   placeholder="Ingresa la referencia de pago"
                   required

@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useSWR from "swr";
 import Modal from "./Modal";
+import CachedImg from "../lib/CachedImg";
 
-export default function WalletsListing() {
-  const [products, setProducts] = useState([]);
+export default function StreamingListing() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeId, setActiveId] = useState(null);
   //   const [search, setSearch] = useState("");
@@ -18,15 +19,8 @@ export default function WalletsListing() {
     setActiveId(null);
   };
 
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/products?populate=*`)
-      .then((res) => res.json())
-      .then((data) => {
-        const items = data.data || [];
-        setProducts(items);
-      })
-      .catch((err) => console.error("Products fetch error:", err));
-  }, []);
+  const { data, error } = useSWR("/api/products?populate=*");
+  const products = data?.data || [];
 
   //   // Debounce search input
   //   useEffect(() => {
@@ -34,7 +28,7 @@ export default function WalletsListing() {
   //     return () => clearTimeout(handle);
   //   }, [search]);
 
-  if (!products.length)
+  if (!data && !error)
     return (
       <div role="status" className="flex w-screen flex-col items-center mt-10">
         <svg
@@ -66,19 +60,14 @@ export default function WalletsListing() {
         STREAMING
       </h2>
 
-      {/* Only show products whose categoria is "wallets" */}
+      {/* Only show products whose categoria is "streaming" */}
       {products.filter &&
         (() => {
-          {
-            /* const q = debouncedSearch.trim().toLowerCase(); */
-          }
-
-          // First limit to categoria === "wallets"
-          const walletsOnly = products.filter(
+          const streamingOnly = products.filter(
             (p) => (p.categoria || "").toString().toLowerCase() === "streaming",
           );
 
-          const filtered = walletsOnly;
+          const filtered = streamingOnly;
 
           return (
             <div className="grid grid-cols-2 gap-4 place-items-center justify-center rounded-lg items-center md:grid-cols-4">
@@ -94,10 +83,10 @@ export default function WalletsListing() {
                       key={product.id}
                     >
                       {product.Imagen?.[0]?.url ? (
-                        <img
-                          src={`${product.Imagen[0].url}`}
-                          className="w-32 md:size-45 rounded-t-lg object-cover"
+                        <CachedImg
+                          src={product.Imagen[0].url}
                           alt={product.Nombre || ""}
+                          className="w-32 md:size-45 rounded-t-lg object-cover"
                         />
                       ) : null}
                       <h3 className="text-white text-sm font-Noto text-center box-border m-auto w-[110px] py-2">
@@ -122,3 +111,5 @@ export default function WalletsListing() {
     </section>
   );
 }
+
+// uses shared CachedImg component

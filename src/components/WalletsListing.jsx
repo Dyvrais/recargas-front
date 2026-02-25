@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useSWR from "swr";
 import Modal from "./Modal";
+import CachedImg from "../lib/CachedImg";
 
 export default function WalletsListing() {
-  const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeId, setActiveId] = useState(null);
+  const { data } = useSWR("/api/products?populate=*");
+  const products = data?.data || [];
   //   const [search, setSearch] = useState("");
   //   const [debouncedSearch, setDebouncedSearch] = useState("");
 
@@ -18,15 +21,7 @@ export default function WalletsListing() {
     setActiveId(null);
   };
 
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/products?populate=*`)
-      .then((res) => res.json())
-      .then((data) => {
-        const items = data.data || [];
-        setProducts(items);
-      })
-      .catch((err) => console.error("Products fetch error:", err));
-  }, []);
+  // data is provided by SWR
 
   //   // Debounce search input
   //   useEffect(() => {
@@ -94,10 +89,10 @@ export default function WalletsListing() {
                       key={product.id}
                     >
                       {product.Imagen?.[0]?.url ? (
-                        <img
-                          src={`${product.Imagen[0].url}`}
-                          className="size-32 md:size-45 rounded-t-lg object-cover"
+                        <CachedImg
+                          src={product.Imagen[0].url}
                           alt={product.Nombre || ""}
+                          className="size-32 md:size-45 rounded-t-lg object-cover"
                         />
                       ) : null}
                       <h3 className="text-white text-sm font-Noto text-center box-border m-auto w-[110px] py-2">

@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo } from "react";
+import useSWR from "swr";
+import CachedImg from "../lib/CachedImg";
 
 const Modal = ({ isOpen, onClose, itemId }) => {
   const [data, setData] = useState(null);
@@ -18,14 +20,17 @@ const Modal = ({ isOpen, onClose, itemId }) => {
   const formRef = useRef(null);
   const [isFormValid, setIsFormValid] = useState(false);
 
-  useEffect(() => {
-    fetch("https://ve.dolarapi.com/v1/dolares")
-      .then((response) => response.json())
-      .then((data) => {
-        setDolarParalelo(data[1].promedio);
-        setDolar(data[0].promedio);
-      });
-  }, []);
+  const { data: dolarData } = useSWR("https://ve.dolarapi.com/v1/dolares");
+
+  React.useEffect(() => {
+    if (!dolarData) return;
+    try {
+      setDolarParalelo(dolarData[1].promedio);
+      setDolar(dolarData[0].promedio);
+    } catch (e) {
+      // ignore malformed dolar data
+    }
+  }, [dolarData]);
 
   const opcionesSorted = useMemo(() => {
     if (!data?.data) return [];
@@ -37,53 +42,41 @@ const Modal = ({ isOpen, onClose, itemId }) => {
     });
   }, [data, DolarParalelo]);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
+  const handleTelefonoChange = (e) => {
+    // 1. Eliminar todo lo que no sea número
+    const input = e.target.value.replace(/\D/g, "");
 
-    const fetchData = async () => {
-      if (!isOpen || itemId === null) {
-        setData(null);
-        setError(null);
-        return;
-      }
+    // 2. Limitar a 11 dígitos (formato estándar 04XX1234567)
+    const truncated = input.slice(0, 11);
 
-      setIsLoading(true);
-      setError(null); // Clear any previous errors
+    // 3. Aplicar la máscara dinámica (Ej: 0412-1234567)
+    let formatted = truncated;
+    if (truncated.length > 4) {
+      formatted = `${truncated.slice(0, 4)}-${truncated.slice(4)}`;
+    }
 
-      try {
-        // 2. The actual fetch call, passing the abort signal
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/opcions?filters[product][id][$eq]=${itemId}&populate=*`,
-          { signal },
-        );
+    setTelefono(formatted);
+  };
 
-        // 3. Catch HTTP errors (fetch doesn't throw errors for 404s automatically)
-        if (!response.ok) {
-          throw new Error(`Data not found (Error ${response.status})`);
-        }
+  const key =
+    isOpen && itemId !== null
+      ? `/api/opcions?filters[product][id][$eq]=${itemId}&populate=*`
+      : null;
 
-        const result = await response.json();
-        setData(result);
-      } catch (err) {
-        // 4. Ignore the error if it was caused by us intentionally aborting the request
-        if (err.name !== "AbortError") {
-          setError(err.message);
-        }
-      } finally {
-        // Stop the loading spinner only if the request wasn't cancelled
-        if (!signal.aborted) {
-          setIsLoading(false);
-        }
-      }
-    };
+  const {
+    data: opcionesData,
+    error: opcionesError,
+    isLoading: opcionesLoading,
+  } = useSWR(key);
 
-    fetchData();
-
-    return () => {
-      controller.abort();
-    };
-  }, [isOpen, itemId]);
+  // Mirror SWR states into local state used by the component
+  React.useEffect(() => {
+    setIsLoading(Boolean(opcionesLoading));
+    setError(
+      opcionesError ? opcionesError.message || String(opcionesError) : null,
+    );
+    setData(opcionesData || null);
+  }, [opcionesData, opcionesError, opcionesLoading]);
 
   const validateFormFields = () => {
     const form = formRef.current;
@@ -91,7 +84,11 @@ const Modal = ({ isOpen, onClose, itemId }) => {
     const elements = Array.from(form.elements || []);
     // Only validate fields that are explicitly required
     for (const el of elements) {
-      if (!el.required) continue;
+      // Treat either native `required` or our CSS marker class `required-field` as required
+      const isMarkedRequired =
+        el.required ||
+        (el.classList && el.classList.contains("required-field"));
+      if (!isMarkedRequired) continue;
       const tag = (el.tagName || "").toUpperCase();
       const type = (el.type || "").toLowerCase();
       if (
@@ -116,6 +113,47 @@ const Modal = ({ isOpen, onClose, itemId }) => {
       if (!String(val || "").trim()) return false;
     }
     return true;
+  };
+
+  const strictValidate = () => {
+    // Ensure a coin/option is selected
+    if (!selectedOptionId) return false;
+    const productName = data?.data?.[0]?.product?.Nombre || "";
+    const categoria = data?.data?.[0]?.product?.categoria || "";
+    const phone = String(telefono || "").trim();
+
+    // streaming items only need phone
+    if (categoria === "streaming") return phone.length > 0;
+
+    switch (productName) {
+      case "Steam":
+        return Boolean(
+          String(userIdVal || "").trim() &&
+          String(passwordVal || "").trim() &&
+          phone.length > 0,
+        );
+      case "Free Fire":
+      case "Free Fire Pases y Tarjetas":
+        return Boolean(String(userIdVal || "").trim() && phone.length > 0);
+      case "Roblox":
+        return Boolean(
+          String(emailVal || "").trim() &&
+          String(passwordVal || "").trim() &&
+          phone.length > 0,
+        );
+      case "Mobile Legends":
+        return Boolean(
+          String(userIdVal || "").trim() &&
+          String(idZonaVal || "").trim() &&
+          phone.length > 0,
+        );
+      case "Delta Force":
+      case "Bloodstrike":
+        return Boolean(String(userIdVal || "").trim() && phone.length > 0);
+      default:
+        // Most other products require at least a contact phone
+        return phone.length > 0;
+    }
   };
 
   if (!isOpen) return null;
@@ -263,7 +301,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                         className={`border flex rounded-lg text-sm p-2 items-center text-left ${selected ? "bg-yellow-400 text-black" : "bg-gray-900 text-white"}`}
                       >
                         {imgUrl ? (
-                          <img
+                          <CachedImg
                             src={imgUrl}
                             className="size-6 justify-center"
                             alt={opcion.TipoCoin || ""}
@@ -288,7 +326,9 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               ref={formRef}
               className="flex flex-col gap-2 my-4"
               onSubmit={(e) => e.preventDefault()}
-              onChange={() => setIsFormValid(validateFormFields())}
+              onChange={() =>
+                setIsFormValid(validateFormFields() && strictValidate())
+              }
             >
               {data.data[0].product?.Nombre == "Steam" && (
                 <>
@@ -298,7 +338,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                   <input
                     value={userIdVal}
                     onChange={(e) => setUserIdVal(e.target.value)}
-                    type="text"
+                    type="number"
                     id="userId"
                     name="userId"
                     className="p-2 rounded-lg bg-gray-700 text-white"
@@ -318,11 +358,12 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    onChange={handleTelefonoChange}
                     className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
                     required
                   />
                 </>
@@ -339,7 +380,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                   <input
                     value={userIdVal}
                     onChange={(e) => setUserIdVal(e.target.value)}
-                    type="text"
+                    type="number"
                     id="id"
                     name="id"
                     className="p-2 rounded-lg bg-gray-700 text-white"
@@ -349,11 +390,12 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    onChange={handleTelefonoChange}
                     className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
                     required
                   />
                 </>
@@ -388,11 +430,12 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    onChange={handleTelefonoChange}
                     className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
                     required
                   />
                 </>
@@ -407,7 +450,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                   <input
                     value={userIdVal}
                     onChange={(e) => setUserIdVal(e.target.value)}
-                    type="text"
+                    type="number"
                     id="id"
                     name="id"
                     className="p-2 rounded-lg bg-gray-700 text-white"
@@ -417,11 +460,12 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    onChange={handleTelefonoChange}
                     className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
                     required
                   />
                 </>
@@ -469,11 +513,12 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    onChange={handleTelefonoChange}
                     className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
                     required
                   />
                 </>
@@ -498,11 +543,12 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    onChange={handleTelefonoChange}
                     className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
                     required
                   />
                 </>
@@ -517,9 +563,9 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                   <input
                     value={userIdVal}
                     onChange={(e) => setUserIdVal(e.target.value)}
-                    type="text"
-                    id="email"
-                    name="email"
+                    type="number"
+                    id="userId"
+                    name="userId"
                     className="p-2 rounded-lg bg-gray-700 text-white"
                     placeholder="Ingresa tu ID"
                   />
@@ -527,11 +573,12 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    onChange={handleTelefonoChange}
                     className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
                     required
                   />
                 </>
@@ -579,11 +626,12 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    onChange={handleTelefonoChange}
                     className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
                     required
                   />
                 </>
@@ -631,11 +679,12 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    onChange={handleTelefonoChange}
                     className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
                     required
                   />
                 </>
@@ -650,9 +699,9 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                   <input
                     value={userIdVal}
                     onChange={(e) => setUserIdVal(e.target.value)}
-                    type="text"
-                    id="id"
-                    name="id"
+                    type="number"
+                    id="userId"
+                    name="userId"
                     className="p-2 rounded-lg bg-gray-700 text-white"
                     placeholder="Ingresa tu ID"
                   />
@@ -672,11 +721,12 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    onChange={handleTelefonoChange}
                     className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
                     required
                   />
                 </>
@@ -688,11 +738,12 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}
                     className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    pattern="0[412]{2}[0-9]{7}"
                     required
                   />
                 </>
@@ -706,11 +757,12 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    onChange={handleTelefonoChange}
                     className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
                     required
                   />
                   <label htmlFor="datos-cuenta" className="text-sm text-white">
@@ -735,11 +787,12 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    onChange={handleTelefonoChange}
                     className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
                     required
                   />
                   <label htmlFor="datos-cuenta" className="text-sm text-white">
@@ -787,11 +840,12 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    onChange={handleTelefonoChange}
                     className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
                     required
                   />
                   <label htmlFor="datos-cuenta" className="text-sm text-white">
@@ -830,7 +884,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                 id="cart"
                 onClick={() => {
                   // Validate form before allowing add-to-cart
-                  if (!validateFormFields()) {
+                  if (!validateFormFields() || !strictValidate()) {
                     setError("Por favor completa los campos requeridos.");
                     return;
                   }
