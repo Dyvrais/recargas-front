@@ -152,7 +152,7 @@ const Cart = ({ isOpen, onClose }) => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/ordens`,
+        `${import.meta.env.VITE_API_URL}api/ordens`,
         {
           method: "POST",
           headers: {
@@ -170,6 +170,7 @@ const Cart = ({ isOpen, onClose }) => {
       );
 
       if (!response.ok) {
+        console.error("Failed to submit order:", response.statusText);
         throw new Error("Failed to submit order");
       }
 

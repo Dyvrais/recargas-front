@@ -338,7 +338,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                   <input
                     value={userIdVal}
                     onChange={(e) => setUserIdVal(e.target.value)}
-                    type="number"
+                    type="text"
                     id="userId"
                     name="userId"
                     className="p-2 rounded-lg bg-gray-700 text-white"
