@@ -370,24 +370,6 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                 </>
               )}
 
-              {data.data[0].product?.Nombre == "Steam" &&
-                data.data[0].product?.categoria === "gift-cards" && (
-                  <>
-                    <label className="block text-sm text-white">
-                      Teléfono de contacto (WhatsApp):
-                    </label>
-                    <input
-                      type="tel"
-                      value={telefono}
-                      onChange={handleTelefonoChange}
-                      className="w-full p-2 rounded bg-gray-700 text-white"
-                      placeholder="Ingresa tu teléfono ej: 04121234567"
-                      maxLength={12}
-                      required
-                    />
-                  </>
-                )}
-
               {/* FREE FIRE IF OPERATION */}
               {(data.data[0].product?.Nombre == "Free Fire" ||
                 data.data[0].product?.Nombre ==
@@ -459,24 +441,6 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                   />
                 </>
               )}
-
-              {data.data[0].product?.Nombre == "Roblox" &&
-                data.data[0].product?.categoria === "gift-cards" && (
-                  <>
-                    <label className="block text-sm text-white">
-                      Teléfono de contacto (WhatsApp):
-                    </label>
-                    <input
-                      type="tel"
-                      value={telefono}
-                      onChange={handleTelefonoChange}
-                      className="w-full p-2 rounded bg-gray-700 text-white"
-                      placeholder="Ingresa tu teléfono ej: 04121234567"
-                      maxLength={12}
-                      required
-                    />
-                  </>
-                )}
 
               {/* BLOOD STRIKE IF OPERATION */}
               {(data.data[0].product?.Nombre == "Bloodstrike" ||
@@ -929,24 +893,6 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     name="email"
                     className="p-2 rounded-lg bg-gray-700 text-white"
                     placeholder="Ingresa tu ID o correo asociado a la cuenta"
-                  />
-                </>
-              )}
-
-              {/* GIFT CARDS IF OPERATION */}
-              {data.data[0].product?.categoria === "gift-cards" && (
-                <>
-                  <label className="block text-sm text-white">
-                    Teléfono de contacto (WhatsApp):
-                  </label>
-                  <input
-                    type="tel"
-                    value={telefono}
-                    onChange={handleTelefonoChange}
-                    className="w-full p-2 rounded bg-gray-700 text-white"
-                    placeholder="Ingresa tu teléfono ej: 04121234567"
-                    maxLength={12}
-                    required
                   />
                 </>
               )}

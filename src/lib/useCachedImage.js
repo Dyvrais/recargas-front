@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const CACHE_NAME = "image-cache-v1";
-const DEFAULT_TTL = 3 * 24 * 60 * 60 * 1000; // 3 days
+const DEFAULT_TTL = 60 * 60 * 1000; // 1 hour
 
 function normalizeUrl(url) {
   if (!url) return null;

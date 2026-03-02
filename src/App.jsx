@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Navbar from "./components/Navbar";
 import "./App.css";
-import Products from "./components/ProductListing";
+import Products from "./components/GamesListing";
 import Gallery from "./components/Gallery";
 import Section from "./components/Section";
 import Footer from "./components/Footer";

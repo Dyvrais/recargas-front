@@ -1,5 +1,6 @@
 const CACHE_PREFIX = "swr_cache_v1:";
-const DEFAULT_TTL = Number(import.meta.env.VITE_API_CACHE_TTL) || 18000000;
+const DEFAULT_TTL =
+  Number(import.meta.env.VITE_API_CACHE_TTL) || 60 * 60 * 1000; // 1 hour
 
 function keyFor(k) {
   return `${CACHE_PREFIX}${k}`;
