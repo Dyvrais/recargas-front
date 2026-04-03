@@ -1,5 +1,5 @@
 import React from "react";
-import { FaWhatsapp, FaFacebook, FaInstagram } from "react-icons/fa";
+import { FaWhatsapp, FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa";
 export default function Section() {
   return (
     <section
@@ -53,6 +53,13 @@ export default function Section() {
           className="text-gray-400 hover:text-gray-200 transition-colors duration-200"
         >
           <FaWhatsapp className="text-2xl" />
+        </a>
+        <a
+          href="https://tiktok.com/@recargasxtreme"
+          target="_blank"
+          className="text-gray-400 hover:text-gray-200 transition-colors duration-200"
+        >
+          <FaTiktok className="text-2xl" />
         </a>
       </div>
     </section>

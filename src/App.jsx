@@ -6,9 +6,9 @@ import Gallery from "./components/Gallery";
 import Section from "./components/Section";
 import Footer from "./components/Footer";
 import Cart from "./components/Cart";
-import WalletsListing from "./components/WalletsListing";
-import StreamingListing from "./components/StreamingListing";
-import GiftCardsListing from "./components/GiftCardsListing";
+import WalletsListing from "./components/WalletsListing.v1";
+import StreamingListing from "./components/StreamingListing.v1";
+import GiftCardsListing from "./components/GiftCardsListingv=1";
 
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);

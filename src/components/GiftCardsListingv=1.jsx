@@ -3,7 +3,7 @@ import useSWR from "swr";
 import Modal from "./Modal";
 import CachedImg from "../lib/CachedImg";
 
-export default function StreamingListing() {
+export default function GiftCardListing() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeId, setActiveId] = useState(null);
 

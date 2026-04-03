@@ -586,6 +586,24 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                 </>
               )}
 
+              {/* HONOR OF KINGS IF OPERATION */}
+              {data.data[0].product?.Nombre == "Honor Of Kings" && (
+                <>
+                  <label className="block text-sm text-white">
+                    Teléfono de contacto (WhatsApp):
+                  </label>
+                  <input
+                    type="tel"
+                    value={telefono}
+                    onChange={handleTelefonoChange}
+                    className="w-full p-2 rounded bg-gray-700 text-white"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
+                    required
+                  />
+                </>
+              )}
+
               {/* EA FC MOBILE IF OPERATION */}
               {data.data[0].product?.Nombre == "EA FC Mobile" && (
                 <>
