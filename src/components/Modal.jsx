@@ -980,10 +980,10 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     setError(null);
                     // optional: clear form or close modal
 
-                    // setTimeout(() => {
-                    //   setSuccessMessage("");
-                    //   onClose();
-                    // }, 1500);
+                    setTimeout(() => {
+                      setSuccessMessage("");
+                      onClose();
+                    }, 15000);
                     setTelefono("");
                     setEmailVal("");
                     setPasswordVal("");
