@@ -182,8 +182,8 @@ const Cart = ({ isOpen, onClose }) => {
       setReceiptOpen(true);
       setCart([]);
       localStorage.removeItem("cart");
-      const nroOrden = result.data.id - 1; // Strapi auto-increments after creation, so the new order ID is current max + 1
-      setIdOrden(nroOrden);
+      // const nroOrden = result.data.id - 1; // Strapi auto-increments after creation, so the new order ID is current max + 1
+      // setIdOrden(nroOrden);
       setSubmitError(false);
     } catch (error) {
       console.error("Error submitting order:", error);
