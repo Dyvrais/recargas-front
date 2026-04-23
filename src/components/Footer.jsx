@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="text-white md:w-screen mt-8 py-6">
+    <footer className="text-white md:w-screen mt-8 mb-8 py-6">
       <div className="max-w-7xl text-gray-400 mx-auto px-4 text-center">
         <p className="text-sm md:text-md font-Poppins">
           &copy; {new Date().getFullYear()} RecargasXtreme. Todos los derechos
