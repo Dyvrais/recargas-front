@@ -38,12 +38,12 @@ export default function SupportButtons() {
           supportOpen ? "max-h-60" : "max-h-0"
         }`}
       >
-        <ul className="flex flex-col bg-[#25D366] rounded-lg items-center space-y-4 p-3 text-md text-white font-bold">
+        <ul className="flex flex-col bg-[#25D366] rounded-lg items-center font-Melon space-y-4 p-3 text-md text-white font-bold">
           <li className="w-full text-center transition">
             <a
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2"
+              className="p-2 cursor-pointer"
               onClick={() => handleOpenModal()}
             >
               Soporte
@@ -55,7 +55,7 @@ export default function SupportButtons() {
               href="https://whatsapp.com/channel/0029Vb7NWy7D8SDvcVXmWT1F"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2"
+              className="p-2 cursor-pointer"
               onClick={() => setSupportOpen(false)}
             >
               Canal
@@ -67,7 +67,7 @@ export default function SupportButtons() {
               href="https://www.instagram.com/reel/DVQJUwgDoYd/"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2"
+              className="p-2 cursor-pointer"
               onClick={() => setSupportOpen(false)}
             >
               Tutorial
@@ -88,6 +88,12 @@ export default function SupportButtons() {
           className="bg-gray-800 relative rounded-lg p-6 overflow-y-auto text-white max-h-[80vh] max-w-[80%] md:max-w-sm mx-auto mt-20"
           onClick={(e) => e.stopPropagation()}
         >
+          <button
+            className="absolute top-2 right-2 p-1 text-white text-4xl font-bold"
+            onClick={() => setIsModalOpen(false)}
+          >
+            &times;
+          </button>
           <form className="flex flex-col text-left">
             <h2 className="text-xl font-bold mb-4">
               <IoChatbubbleEllipsesSharp className="inline-block text-3xl" />{" "}
