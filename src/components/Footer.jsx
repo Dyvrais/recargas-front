@@ -11,7 +11,7 @@ export default function Footer() {
           dueños.
         </p>
         <p className="text-sm md:text-md mt-2 font-Poppins">
-          Made with 💛 by Codenver
+          Hecho con 💛 por Codenver
         </p>
       </div>
     </footer>

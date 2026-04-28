@@ -3,7 +3,7 @@ import useSWR from "swr";
 import Modal from "./Modal";
 import CachedImg from "../lib/CachedImg";
 
-export default function GiftCardListing() {
+export default function GiftCardListing({ searchTerm }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeId, setActiveId] = useState(null);
 
@@ -45,22 +45,27 @@ export default function GiftCardListing() {
 
   return (
     <section
-      id="streaming"
+      id="gift-cards"
       className="flex w-screen flex-col mt-8 justify-center items-center scroll-mt-20 scroll-smooth"
     >
       <h2 className="font-Melon tracking-wide font-bold text-center text-white my-3 text-xl md:text-3xl">
         GIFT CARDS
       </h2>
 
-      {/* Only show products whose categoria is "giftcard" */}
+      {/* Only show products whose categoria is "gift-cards" */}
       {products.filter &&
         (() => {
+          const q = (searchTerm || "").trim().toLowerCase();
           const giftcardsOnly = products.filter(
             (p) =>
               (p.categoria || "").toString().toLowerCase() === "gift-cards",
           );
 
-          const filtered = giftcardsOnly;
+          const filtered = q
+            ? giftcardsOnly.filter((p) =>
+                (p.Nombre || "").toLowerCase().includes(q),
+              )
+            : giftcardsOnly;
 
           return (
             <div className="grid grid-cols-2 gap-4 place-items-center justify-center rounded-lg items-center md:grid-cols-4">

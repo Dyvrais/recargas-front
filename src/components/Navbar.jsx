@@ -39,13 +39,18 @@ export default function Navbar({ onCartClick }) {
                 </a>
               </li>
               <li className="text-shadow hover:underline hover:scale-110 transition-transform">
-                <a className="scroll-smooth" href="#wallets">
-                  WALLETS
+                <a className="scroll-smooth" href="#gift-cards">
+                  GIFT CARDS
                 </a>
               </li>
               <li className="text-shadow hover:underline hover:scale-110 transition-transform">
                 <a className="scroll-smooth" href="#streaming">
                   STREAMING
+                </a>
+              </li>
+              <li className="text-shadow hover:underline hover:scale-110 transition-transform">
+                <a className="scroll-smooth" href="#wallets">
+                  WALLETS
                 </a>
               </li>
             </ul>
@@ -74,8 +79,8 @@ export default function Navbar({ onCartClick }) {
               <div className="w-3/4 m-auto border-t border-gray-300 mt-3"></div>
             </li>
             <li className="w-full text-center  hover:bg-[#fec135] hover:text-white transition">
-              <a href="#wallets" onClick={() => setMenuOpen(false)}>
-                WALLETS
+              <a href="#gift-cards" onClick={() => setMenuOpen(false)}>
+                GIFT CARDS
               </a>
               <div className="w-3/4 m-auto border-t border-gray-300 mt-3"></div>
             </li>
@@ -83,6 +88,12 @@ export default function Navbar({ onCartClick }) {
               <a href="#streaming" onClick={() => setMenuOpen(false)}>
                 STREAMING
               </a>
+            </li>
+            <li className="w-full text-center  hover:bg-[#fec135] hover:text-white transition">
+              <a href="#wallets" onClick={() => setMenuOpen(false)}>
+                WALLETS
+              </a>
+              <div className="w-3/4 m-auto border-t border-gray-300 mt-3"></div>
             </li>
           </ul>
         </div>

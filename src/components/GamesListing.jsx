@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useSWR from "swr";
 import Modal from "./Modal";
 import CachedImg from "../lib/CachedImg";
 
 // Simple fetch function
-export default function Products() {
+export default function Products({ searchTerm }) {
   const { data } = useSWR("/api/products?populate=*");
   const products = data?.data || [];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeId, setActiveId] = useState(null);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const handleOpenModal = (id) => {
     setActiveId(id);
@@ -23,12 +21,6 @@ export default function Products() {
   };
 
   // data comes from SWR; no manual fetch needed
-
-  // Debounce search input to avoid filtering on every keystroke
-  useEffect(() => {
-    const handle = setTimeout(() => setDebouncedSearch(search), 300);
-    return () => clearTimeout(handle);
-  }, [search]);
 
   if (!products.length)
     return (
@@ -56,24 +48,16 @@ export default function Products() {
   return (
     <section
       id="juegos"
-      className="flex w-screen flex-col mt-8 justify-center items-center scroll-mt-20 scroll-smooth"
+      className="flex w-screen flex-col mt-4 justify-center items-center scroll-mt-20 scroll-smooth"
     >
       <h2 className="font-Melon tracking-wide font-bold text-center text-white my-3 text-xl md:text-3xl">
-        CATALOGO
+        JUEGOS
       </h2>
 
-      <input
-        type="search"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-[80%] max-w-md p-2 border border-gray-300 rounded-lg mb-4"
-        placeholder="🔍 Buscar productos..."
-      />
-
-      {/* Filtered list based on search (case-insensitive) and categoria === 'juegos' */}
+      {/* Filtered list based on the shared search bar and categoria === 'juegos' */}
       {products.filter &&
         (() => {
-          const q = debouncedSearch.trim().toLowerCase();
+          const q = (searchTerm || "").trim().toLowerCase();
 
           // Limit to categoria === "juegos"
           const juegosOnly = products.filter(
@@ -94,8 +78,10 @@ export default function Products() {
                     const priority = [
                       "Free Fire",
                       "Roblox",
-                      "Free Fire Pases y Tarjetas",
+                      "Fortnite (Interno)",
+                      "Fortnite",
                       "Bloodstrike",
+                      "Free Fire Pases y Tarjetas",
                     ];
                     const nameA = (a.Nombre || "").toString();
                     const nameB = (b.Nombre || "").toString();

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo } from "react";
 import useSWR from "swr";
 import CachedImg from "../lib/CachedImg";
+import { getImageUrl } from "../lib/getImageUrl";
 
 const Modal = ({ isOpen, onClose, itemId }) => {
   const [data, setData] = useState(null);
@@ -17,6 +18,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
   const [loginMethod, setLoginMethod] = useState("-");
   const [successMessage, setSuccessMessage] = useState("");
   const [idZonaVal, setIdZonaVal] = useState("");
+  const [gamePlatform, setGamePlatform] = useState("");
   const formRef = useRef(null);
   const [isFormValid, setIsFormValid] = useState(false);
 
@@ -27,7 +29,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
     try {
       setDolarParalelo(dolarData[1].promedio);
       setDolar(dolarData[0].promedio);
-    } catch (e) {
+    } catch {
       // ignore malformed dolar data
     }
   }, [dolarData]);
@@ -250,44 +252,6 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                   }
 
                   return options.map((opcion) => {
-                    const getImageUrl = (imgField) => {
-                      if (!imgField) return null;
-                      const base = (import.meta.env.VITE_API_URL || "").replace(
-                        /\/$/,
-                        "",
-                      );
-
-                      if (typeof imgField === "string") {
-                        return imgField.startsWith("/")
-                          ? base + imgField
-                          : imgField;
-                      }
-
-                      if (imgField.data) {
-                        const d = imgField.data;
-                        const url = Array.isArray(d)
-                          ? d[0]?.attributes?.url
-                          : d.attributes?.url;
-                        if (url) return url.startsWith("/") ? base + url : url;
-                      }
-
-                      if (Array.isArray(imgField) && imgField[0]?.url) {
-                        const url = imgField[0].url;
-                        return url.startsWith("/") ? base + url : url;
-                      }
-                      if (imgField.url) {
-                        const url = imgField.url;
-                        return url.startsWith("/") ? base + url : url;
-                      }
-
-                      if (imgField.attributes?.url) {
-                        const url = imgField.attributes.url;
-                        return url.startsWith("/") ? base + url : url;
-                      }
-
-                      return null;
-                    };
-
                     const bsPrice =
                       Math.trunc(opcion.Precio * DolarParalelo * 100) / 100;
                     const selected = selectedOptionId === opcion.id;
@@ -442,7 +406,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                 </>
               )}
 
-              {/* BLOOD STRIKE IF OPERATION */}
+              {/* BLOOD STRIKE/GENSHIN IMPACT IF OPERATION */}
               {(data.data[0].product?.Nombre == "Bloodstrike" ||
                 data.data[0].product?.Nombre == "Genshin Impact") && (
                 <>
@@ -458,6 +422,73 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     className="p-2 rounded-lg bg-gray-700 text-white"
                     placeholder="Ingresa tu ID"
                   />
+                  <label className="block text-sm text-white">
+                    Teléfono de contacto (WhatsApp):
+                  </label>
+                  <input
+                    type="tel"
+                    value={telefono}
+                    onChange={handleTelefonoChange}
+                    className="w-full p-2 rounded bg-gray-700 text-white"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
+                    required
+                  />
+                </>
+              )}
+              {/* FORTNITE IF OPERATION */}
+              {(data.data[0].product?.Nombre == "Fortnite (Interno)" ||
+                data.data[0].product?.Nombre == "Fortnite") && (
+                <>
+                  <label htmlFor="datos-cuenta" className="text-sm text-white">
+                    Datos de cuenta Fortnite:
+                  </label>
+                  <input
+                    value={emailVal}
+                    onChange={(e) => setEmailVal(e.target.value)}
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Correo electrónico de la cuenta Fortnite"
+                  />
+                  <input
+                    value={passwordVal}
+                    onChange={(e) => setPasswordVal(e.target.value)}
+                    type="password"
+                    id="password"
+                    name="password"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Contraseña de la cuenta Fortnite"
+                  />
+                  <label htmlFor="iniciosesion" className="text-sm text-white">
+                    Metodo de inicio de sesión:
+                  </label>
+                  <select
+                    id="iniciosesion"
+                    name="iniciosesion"
+                    value={loginMethod}
+                    onChange={(e) => setLoginMethod(e.target.value)}
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                  >
+                    <option value="facebook">Epic Games</option>
+                    <option value="google">Xbox</option>
+                  </select>
+                  <label htmlFor="plataforma" className="text-sm text-white">
+                    Plataforma de juego:
+                  </label>
+                  <select
+                    id="plataforma"
+                    name="plataforma"
+                    value={gamePlatform}
+                    onChange={(e) => setGamePlatform(e.target.value)}
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                  >
+                    <option value="pc">PC</option>
+                    <option value="playstation">PlayStation</option>
+                    <option value="xbox">Xbox</option>
+                    <option value="nintendo">Nintendo</option>
+                  </select>
                   <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
@@ -956,13 +987,16 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     IDCoin: opcion.id,
                     NombreProducto: productName,
                     CoinSeleccionada: opcion.TipoCoin,
+                    ImagenCoin: opcion.ImagenCoin,
                     PrecioDolares: opcion.Precio,
                     PrecioBolivares:
                       Math.trunc(opcion.Precio * DolarParalelo * 100) / 100,
+                    Cantidad: 1,
                     IDdelUsuario: userIdVal,
                     CorreoDeCuenta: emailVal,
                     ContraseñaDeCuenta: passwordVal,
                     MetodoDeInicioSesion: loginMethod,
+                    PlataformaDeJuego: gamePlatform,
                     TelefonoDeContacto: telefono,
                     IDZona: idZonaVal,
                     FechaAgregado: new Date().toISOString(),
@@ -989,7 +1023,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     setPasswordVal("");
                     setUserIdVal("");
                     setIdZonaVal("");
-                  } catch (e) {
+                  } catch {
                     setError("No se pudo guardar el carrito.");
                   }
                 }}

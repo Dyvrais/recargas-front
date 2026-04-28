@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import ReceiptModal from "./ReceiptModal";
+import CachedImg from "../lib/CachedImg";
 import { IoMdCloseCircle } from "react-icons/io";
 import { FaRegCopy } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
 import { IoCartOutline } from "react-icons/io5";
+import { FaPlus, FaMinus } from "react-icons/fa";
+import { getImageUrl } from "../lib/getImageUrl";
 
 const Cart = ({ isOpen, onClose }) => {
   const [cart, setCart] = useState([]);
@@ -15,7 +18,7 @@ const Cart = ({ isOpen, onClose }) => {
   const [paymentMethod, setPaymentMethod] = useState("pago-movil");
   const [copyMessage, setCopyMessage] = useState("");
   const [referencia, setReferencia] = useState("");
-  const [idOrden, setIdOrden] = useState(null);
+  const [idOrden] = useState(null);
 
   const paymentListRef = useRef(null);
   const formRef = useRef(null);
@@ -29,7 +32,7 @@ const Cart = ({ isOpen, onClose }) => {
         setTimeout(() => setCopyMessage(""), 1500);
         return;
       }
-    } catch (e) {
+    } catch {
       // fallthrough to fallback
     }
 
@@ -44,7 +47,7 @@ const Cart = ({ isOpen, onClose }) => {
       document.body.removeChild(textarea);
       setCopyMessage("Copiado al portapapeles");
       setTimeout(() => setCopyMessage(""), 2000);
-    } catch (e) {
+    } catch {
       // ignore
     }
   };
@@ -116,6 +119,17 @@ const Cart = ({ isOpen, onClose }) => {
     setCart(storedCart);
   }, [isOpen]); // Reload when opened
 
+  const updateItemQuantity = (index, delta) => {
+    const newCart = cart.map((item, i) => {
+      if (i !== index) return item;
+      const currentQty = Number(item.Cantidad || 1);
+      const nextQty = Math.max(1, currentQty + delta);
+      return { ...item, Cantidad: nextQty };
+    });
+    setCart(newCart);
+    localStorage.setItem("cart", JSON.stringify(newCart));
+  };
+
   const removeItem = (index) => {
     const newCart = cart.filter((_, i) => i !== index);
     setCart(newCart);
@@ -124,13 +138,14 @@ const Cart = ({ isOpen, onClose }) => {
 
   const montoTotal = useMemo(() => {
     return cart.reduce((sum, item) => {
+      const qty = Number(item.Cantidad || 1);
       const raw = item?.PrecioBolivares;
       const num = parseFloat(
         raw === undefined || raw === null
           ? 0
           : String(raw).replace(/[^0-9.-]+/g, ""),
       );
-      return sum + (isNaN(num) ? 0 : num);
+      return sum + (isNaN(num) ? 0 : num) * (isNaN(qty) ? 1 : qty);
     }, 0);
   }, [cart]);
 
@@ -202,7 +217,7 @@ const Cart = ({ isOpen, onClose }) => {
       onClick={onClose}
     >
       <div
-        className="bg-gray-800 relative opacity-100 p-6 rounded-lg shadow-lg w-80 md:w-100 max-h-96 overflow-y-auto"
+        className="bg-gray-800 relative opacity-100 p-6 rounded-lg shadow-lg w-[95%] md:w-120 max-h-96 overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -222,28 +237,79 @@ const Cart = ({ isOpen, onClose }) => {
         ) : (
           <>
             <ul className="space-y-2">
-              {cart.map((item, index) => (
-                <li
-                  key={index}
-                  className="flex justify-around text-sm items-center bg-gray-700 p-2 rounded"
-                >
-                  <div className="">
-                    <p className="font-semibold">
-                      {item.NombreProducto} - {item.CoinSeleccionada}
-                    </p>
-                    <p>{item.PrecioBolivares} Bs.</p>
-                  </div>
-                  <button
-                    onClick={() => removeItem(index)}
-                    className="text-center text-2xl text-red-400 hover:text-red-600"
+              {cart.map((item, index) => {
+                const qty = Number(item.Cantidad || 1);
+                const rawPrice = parseFloat(
+                  String(item.PrecioBolivares || "").replace(/[^0-9.-]+/g, ""),
+                );
+                const itemTotal = isNaN(rawPrice) ? 0 : rawPrice * qty;
+                const itemImgUrl = getImageUrl(item.ImagenCoin);
+                if (itemImgUrl) {
+                  console.log("imgUrl for cart item", itemImgUrl);
+                }
+                return (
+                  <li
+                    key={index}
+                    className="flex flex-col gap-3 text-sm bg-gray-900 p-3 rounded"
                   >
-                    <IoMdCloseCircle />
-                  </button>
-                </li>
-              ))}
+                    <div className="flex items-center justify-between gap-1 w-full text-xs md:text-sm">
+                      <div className="min-w-0 m-auto flex flex-col items-center sm:items-start">
+                        <p className="font-semibold flex justify-center text-center sm:text-left">
+                          {itemImgUrl ? (
+                            <CachedImg
+                              src={itemImgUrl}
+                              alt={item.NombreProducto || "Imagen del producto"}
+                              className="size-10 p-1 md:size-12 m-auto rounded object-contain mb-1"
+                            />
+                          ) : null}
+                          {item.NombreProducto} - {item.CoinSeleccionada}
+                        </p>
+                        <p className="text-yellow-500 m-auto">
+                          {item.PrecioBolivares} Bs.
+                        </p>
+                      </div>
+                      <div
+                        id="botones"
+                        className="flex flex-row items-center justify-end gap-1 flex-shrink-0"
+                      >
+                        <button
+                          onClick={() => updateItemQuantity(index, -1)}
+                          className="bg-gray-700 p-2 rounded text-white"
+                        >
+                          <FaMinus />
+                        </button>
+                        <span className="min-w-[32px] text-center text-md text-white">
+                          {qty}
+                        </span>
+                        <button
+                          onClick={() => updateItemQuantity(index, 1)}
+                          className="bg-yellow-500 p-2 rounded text-black"
+                        >
+                          <FaPlus />
+                        </button>
+                        <button
+                          onClick={() => removeItem(index)}
+                          className="text-center text-2xl text-red-400 hover:text-red-600"
+                        >
+                          <IoMdCloseCircle />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between text-white">
+                      <div className="text-xs text-gray-400">Subtotal</div>
+                      <div className="font-semibold">
+                        {itemTotal.toFixed(2)} Bs.
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
             <div className="mt-3 text-white font-semibold">
-              Monto Total: {montoTotal.toFixed(2)} Bs.
+              Monto Total:{" "}
+              <span className="text-yellow-500">
+                {montoTotal.toFixed(2)} Bs.
+              </span>
             </div>
             <form
               ref={formRef}
@@ -262,7 +328,8 @@ const Cart = ({ isOpen, onClose }) => {
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 className="w-full p-2 rounded mt-2 bg-gray-700 text-white"
               >
-                <option value="pago-movil">Pago movil</option>
+                <option value="pago-movil">Pago movil 1</option>
+                <option value="pago-movil-2">Pago movil 2</option>
                 {/* <option value="zinli">Zinli</option>
                 <option value="binance">Binance</option>
                 <option value="kontigo">Kontigo</option> */}
@@ -271,6 +338,52 @@ const Cart = ({ isOpen, onClose }) => {
               {/* Payment details placeholder per method */}
               <div className="text-sm bg-gray-700 text-white p-3 rounded-lg mb-3">
                 {paymentMethod === "pago-movil" && (
+                  <ul ref={paymentListRef} className="list-none space-y-2">
+                    <li className="font-semibold">Pago Móvil</li>
+                    <li className="flex items-center justify-between">
+                      <span>Banco: 0102 - Banco de Venezuela</span>
+                      <button
+                        className="text-sm bg-gray-600 px-2 py-1 rounded"
+                        onClick={() => handleCopy("0102 - Banco de Venezuela")}
+                      >
+                        <FaRegCopy />
+                      </button>
+                    </li>
+                    <li className="flex items-center justify-between">
+                      <span>Cedula: 8.507.321</span>
+                      <button
+                        className="text-sm bg-gray-600 px-2 py-1 rounded"
+                        onClick={() => handleCopy("8.507.321")}
+                      >
+                        <FaRegCopy />
+                      </button>
+                    </li>
+                    <li className="flex items-center justify-between">
+                      <span>Telefono: 0414-6138263</span>
+                      <button
+                        className="text-sm bg-gray-600 px-2 py-1 rounded"
+                        onClick={() => handleCopy("0414-6138263")}
+                      >
+                        <FaRegCopy />
+                      </button>
+                    </li>
+                    <button
+                      onClick={handleCopyAll}
+                      className="mt-2 m-auto flex items-center gap-1 text-md bg-gray-600 px-2 py-1 rounded"
+                    >
+                      <FaRegCopy />
+                      <span className="ml-2">Copiar datos</span>
+                    </button>
+                  </ul>
+                )}
+                {copyMessage && (
+                  <div className="my-2 m-auto bg-green-600 text-white text-center p-2 w-fit rounded-full flex items-center gap-2">
+                    <FaCheck className="text-sm" />
+                    <span>{copyMessage}</span>
+                  </div>
+                )}
+
+                {paymentMethod === "pago-movil-2" && (
                   <ul ref={paymentListRef} className="list-none space-y-2">
                     <li className="font-semibold">Pago Móvil</li>
                     <li className="flex items-center justify-between">

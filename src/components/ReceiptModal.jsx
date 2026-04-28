@@ -11,10 +11,11 @@ const ReceiptModal = ({
   if (!isOpen || !data) return null;
 
   const montoTotal = data.reduce((sum, item) => {
+    const quantity = Number(item.Cantidad || 1);
     const num =
       parseFloat(String(item.PrecioBolivares || 0).replace(/[^0-9.-]+/g, "")) ||
       0;
-    return sum + num;
+    return sum + num * (isNaN(quantity) ? 1 : quantity);
   }, 0);
 
   return (
@@ -36,19 +37,29 @@ const ReceiptModal = ({
           {orderId ? <small className="text-xs">Orden #{orderId}</small> : null}
         </div>
         <div className="text-sm space-y-2 max-h-60 overflow-y-auto">
-          {data.map((item, idx) => (
-            <div key={idx} className="flex justify-between">
-              <div>
-                <div className="font-semibold">{item.NombreProducto}</div>
-                <div className="text-xs text-gray-700">
-                  {item.CoinSeleccionada}
+          {data.map((item, idx) => {
+            const quantity = Number(item.Cantidad || 1);
+            const price =
+              parseFloat(
+                String(item.PrecioBolivares || 0).replace(/[^0-9.-]+/g, ""),
+              ) || 0;
+            const lineTotal = price * (isNaN(quantity) ? 1 : quantity);
+            return (
+              <div key={idx} className="flex justify-between gap-2">
+                <div>
+                  <div className="font-semibold">{item.NombreProducto}</div>
+                  <div className="text-xs text-gray-700">
+                    {item.CoinSeleccionada} x {quantity}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="font-semibold">
+                    {lineTotal.toFixed(2)} Bs.
+                  </div>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="font-semibold">{item.PrecioBolivares} Bs.</div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <div className="border-t mt-3 pt-2">
           <div className="flex justify-between font-semibold">

@@ -3,7 +3,7 @@ import useSWR from "swr";
 import Modal from "./Modal";
 import CachedImg from "../lib/CachedImg";
 
-export default function StreamingListing() {
+export default function StreamingListing({ searchTerm }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeId, setActiveId] = useState(null);
   //   const [search, setSearch] = useState("");
@@ -63,11 +63,16 @@ export default function StreamingListing() {
       {/* Only show products whose categoria is "streaming" */}
       {products.filter &&
         (() => {
+          const q = (searchTerm || "").trim().toLowerCase();
           const streamingOnly = products.filter(
             (p) => (p.categoria || "").toString().toLowerCase() === "streaming",
           );
 
-          const filtered = streamingOnly;
+          const filtered = q
+            ? streamingOnly.filter((p) =>
+                (p.Nombre || "").toLowerCase().includes(q),
+              )
+            : streamingOnly;
 
           return (
             <div className="grid grid-cols-2 gap-4 place-items-center justify-center rounded-lg items-center md:grid-cols-4">

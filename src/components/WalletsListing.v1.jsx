@@ -3,7 +3,7 @@ import useSWR from "swr";
 import Modal from "./Modal";
 import CachedImg from "../lib/CachedImg";
 
-export default function WalletsListing() {
+export default function WalletsListing({ searchTerm }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeId, setActiveId] = useState(null);
   const { data } = useSWR("/api/products?populate=*");
@@ -64,16 +64,18 @@ export default function WalletsListing() {
       {/* Only show products whose categoria is "wallets" */}
       {products.filter &&
         (() => {
-          {
-            /* const q = debouncedSearch.trim().toLowerCase(); */
-          }
+          const q = (searchTerm || "").trim().toLowerCase();
 
           // First limit to categoria === "wallets"
           const walletsOnly = products.filter(
             (p) => (p.categoria || "").toString().toLowerCase() === "wallet",
           );
 
-          const filtered = walletsOnly;
+          const filtered = q
+            ? walletsOnly.filter((p) =>
+                (p.Nombre || "").toLowerCase().includes(q),
+              )
+            : walletsOnly;
 
           return (
             <div className="grid grid-cols-2 gap-4 place-items-center justify-center rounded-lg items-center md:grid-cols-4">
