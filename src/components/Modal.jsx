@@ -2,6 +2,7 @@ import React, { useState, useRef, useMemo } from "react";
 import useSWR from "swr";
 import CachedImg from "../lib/CachedImg";
 import { getImageUrl } from "../lib/getImageUrl";
+import { IoWarningOutline } from "react-icons/io5";
 
 const Modal = ({ isOpen, onClose, itemId }) => {
   const [data, setData] = useState(null);
@@ -19,6 +20,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
   const [successMessage, setSuccessMessage] = useState("");
   const [idZonaVal, setIdZonaVal] = useState("");
   const [gamePlatform, setGamePlatform] = useState("");
+  const [cosmeticVal, setCosmeticVal] = useState("");
   const formRef = useRef(null);
   const [isFormValid, setIsFormValid] = useState(false);
 
@@ -489,6 +491,91 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     <option value="xbox">Xbox</option>
                     <option value="nintendo">Nintendo</option>
                   </select>
+                  <label className="block text-sm text-white">
+                    Teléfono de contacto (WhatsApp):
+                  </label>
+                  <input
+                    type="tel"
+                    value={telefono}
+                    onChange={handleTelefonoChange}
+                    className="w-full p-2 rounded bg-gray-700 text-white"
+                    placeholder="Ingresa tu teléfono ej: 04121234567"
+                    maxLength={12}
+                    required
+                  />
+                </>
+              )}
+              {/* FORTNITE VIA REGALO IF OPERATION */}
+              {data.data[0].product?.Nombre == "Fortnite (Vía regalo)" && (
+                <>
+                  <p className="mb-4 bg-gray-900 p-3 rounded-lg text-sm text-justify">
+                    <span className="font-bold">
+                      🛒 ¿Cómo calcular la cantidad?
+                    </span>{" "}
+                    <br /> El sistema se basa en el precio en pavos del artículo
+                    que deseas. Solo debes eliminar los últimos dos ceros del
+                    valor del cosmético y colocar ese número en la casilla de
+                    "cantidad" al añadir al carrito.{" "}
+                    <ul>
+                      <li>
+                        <span className="font-bold">• Skin de 1500 pavos</span>:
+                        Coloca 15 en cantidad.
+                      </li>{" "}
+                      <li>
+                        <span className="font-bold">• Lote de 3000 pavos</span>:
+                        Coloca 30 en cantidad.
+                      </li>{" "}
+                      <li>
+                        <span className="font-bold">• Gesto de 800 pavos</span>:
+                        Coloca 8 en cantidad.
+                      </li>{" "}
+                      <li>
+                        <span className="font-bold">• Objeto de 200 pavos</span>
+                        : Coloca 2 en cantidad.
+                      </li>
+                    </ul>{" "}
+                    <span className="font-bold">
+                      ⚠️Requisito obligatorio para que podamos procesar el envío
+                    </span>
+                    <br />
+                    Es indispensable que seamos amigos dentro del juego, agrega
+                    a nuestra cuenta oficial:{" "}
+                    <span className="font-bold">"Shoot1ngz"</span>.{" "}
+                    <span className="underline underline-offset-2">
+                      Importante
+                    </span>
+                    : Epic Games exige un mínimo de 48 horas de amistad para
+                    habilitar la opción de regalos. Si acabas de enviarnos la
+                    solicitud, deberás esperar ese tiempo para recibir tu
+                    pedido. Si tienes algún inconveniente con el cálculo o el
+                    proceso, no dudes en comunicarte con nuestro equipo de
+                    Soporte.
+                  </p>
+                  <label htmlFor="usuario" className="text-sm text-white">
+                    Usuario de Fortnite:
+                  </label>
+                  <input
+                    value={userIdVal}
+                    onChange={(e) => setUserIdVal(e.target.value)}
+                    type="text"
+                    id="userId"
+                    name="userId"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Usuario de la cuenta"
+                  />
+                  <label htmlFor="cosmetico" className="text-sm text-white">
+                    Cosmético o cosméticos que deseas <br /> (coloca el nombre
+                    lo más exacto posible)
+                  </label>
+                  <input
+                    value={cosmeticVal}
+                    onChange={(e) => setCosmeticVal(e.target.value)}
+                    type="text"
+                    id="cosmetico"
+                    name="cosmetico"
+                    className="p-2 rounded-lg bg-gray-700 text-white"
+                    placeholder="Nombre del cosmético o cosméticos que deseas"
+                  />
                   <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
@@ -992,6 +1079,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     PrecioBolivares:
                       Math.trunc(opcion.Precio * DolarParalelo * 100) / 100,
                     Cantidad: 1,
+                    CosmeticoFortniteRegalo: cosmeticVal,
                     IDdelUsuario: userIdVal,
                     CorreoDeCuenta: emailVal,
                     ContraseñaDeCuenta: passwordVal,

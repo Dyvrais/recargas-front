@@ -82,6 +82,7 @@ export default function Products({ searchTerm }) {
                       "Fortnite",
                       "Bloodstrike",
                       "Free Fire Pases y Tarjetas",
+                      "Fortnite (Vía regalo)",
                     ];
                     const nameA = (a.Nombre || "").toString();
                     const nameB = (b.Nombre || "").toString();
