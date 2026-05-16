@@ -95,6 +95,8 @@ const Modal = ({ isOpen, onClose, itemId }) => {
       if (!isMarkedRequired) continue;
       const tag = (el.tagName || "").toUpperCase();
       const type = (el.type || "").toLowerCase();
+      // Skip phone inputs from validation (we treat phone as optional)
+      if (type === "tel") continue;
       if (
         tag === "BUTTON" ||
         type === "button" ||
@@ -123,42 +125,48 @@ const Modal = ({ isOpen, onClose, itemId }) => {
     // Ensure a coin/option is selected
     if (!selectedOptionId) return false;
     const productName = data?.data?.[0]?.product?.Nombre || "";
-    const categoria = data?.data?.[0]?.product?.categoria || "";
-    const phone = String(telefono || "").trim();
-
-    // streaming items only need phone
-    if (categoria === "streaming") return phone.length > 0;
-
+    // Do not require phone anywhere in the modal; only require other essential fields
     switch (productName) {
       case "Steam":
         return Boolean(
-          String(userIdVal || "").trim() &&
-          String(passwordVal || "").trim() &&
-          phone.length > 0,
+          String(userIdVal || "").trim() && String(passwordVal || "").trim(),
         );
       case "Free Fire":
       case "Free Fire Pases y Tarjetas":
-        return Boolean(String(userIdVal || "").trim() && phone.length > 0);
+        return Boolean(String(userIdVal || "").trim());
       case "Roblox":
         return Boolean(
-          String(emailVal || "").trim() &&
-          String(passwordVal || "").trim() &&
-          phone.length > 0,
+          String(emailVal || "").trim() && String(passwordVal || "").trim(),
         );
       case "Mobile Legends":
         return Boolean(
-          String(userIdVal || "").trim() &&
-          String(idZonaVal || "").trim() &&
-          phone.length > 0,
+          String(userIdVal || "").trim() && String(idZonaVal || "").trim(),
         );
       case "Delta Force":
       case "Bloodstrike":
-        return Boolean(String(userIdVal || "").trim() && phone.length > 0);
+        return Boolean(String(userIdVal || "").trim());
       default:
-        // Most other products require at least a contact phone
-        return phone.length > 0;
+        // No phone requirement for other products
+        return true;
     }
   };
+
+  // Recalculate overall form validity when selected option or form fields change
+  React.useEffect(() => {
+    setIsFormValid(validateFormFields() && strictValidate());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    selectedOptionId,
+    telefono,
+    userIdVal,
+    emailVal,
+    passwordVal,
+    idZonaVal,
+    gamePlatform,
+    cosmeticVal,
+    loginMethod,
+    data,
+  ]);
 
   if (!isOpen) return null;
 
@@ -321,7 +329,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Contraseña de la cuenta"
                   />
 
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -332,7 +340,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                 </>
               )}
 
@@ -353,7 +361,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     className="p-2 rounded-lg bg-gray-700 text-white"
                     placeholder="Ingresa tu ID"
                   />
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -364,7 +372,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                 </>
               )}
 
@@ -393,7 +401,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Contraseña de la cuenta"
                   />
 
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -404,7 +412,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                 </>
               )}
 
@@ -424,7 +432,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     className="p-2 rounded-lg bg-gray-700 text-white"
                     placeholder="Ingresa tu ID"
                   />
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -435,7 +443,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                 </>
               )}
               {/* FORTNITE IF OPERATION */}
@@ -491,7 +499,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     <option value="xbox">Xbox</option>
                     <option value="nintendo">Nintendo</option>
                   </select>
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -502,7 +510,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                 </>
               )}
               {/* FORTNITE VIA REGALO IF OPERATION */}
@@ -576,7 +584,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     className="p-2 rounded-lg bg-gray-700 text-white"
                     placeholder="Nombre del cosmético o cosméticos que deseas"
                   />
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -587,7 +595,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                 </>
               )}
 
@@ -629,7 +637,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     <option value="google">Google</option>
                     <option value="activision">Activision</option>
                   </select>
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -640,7 +648,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                 </>
               )}
 
@@ -659,7 +667,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     className="p-2 rounded-lg bg-gray-700 text-white"
                     placeholder="Ingresa tu correo de Supercell"
                   />
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -670,7 +678,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                 </>
               )}
 
@@ -689,7 +697,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     className="p-2 rounded-lg bg-gray-700 text-white"
                     placeholder="Ingresa tu ID"
                   />
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -700,14 +708,14 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                 </>
               )}
 
               {/* HONOR OF KINGS IF OPERATION */}
               {data.data[0].product?.Nombre == "Honor Of Kings" && (
                 <>
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -718,7 +726,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                 </>
               )}
 
@@ -760,7 +768,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     <option value="EA">EA</option>
                     <option value="Google">Google</option>
                   </select>
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -771,7 +779,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                 </>
               )}
 
@@ -813,7 +821,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     <option value="Riot">Riot</option>
                     <option value="Google">Google</option>
                   </select>
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -824,7 +832,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                 </>
               )}
 
@@ -855,7 +863,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     className="p-2 rounded-lg bg-gray-700 text-white"
                     placeholder="Ingresa tu ID de zona"
                   />
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -866,7 +874,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                 </>
               )}
 
@@ -874,7 +882,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               {(data.data[0].product?.categoria == "streaming" ||
                 data.data[0].product?.categoria == "gift-cards") && (
                 <>
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -885,7 +893,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     pattern="0[412]{2}[0-9]{7}"
                     required
-                  />
+                  /> */}
                 </>
               )}
 
@@ -893,7 +901,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               {(data.data[0].product?.Nombre == "Brawl Stars" ||
                 data.data[0].product?.Nombre == "Clash of Clans") && (
                 <>
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -904,7 +912,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                   <label htmlFor="datos-cuenta" className="text-sm text-white">
                     Datos de cuenta:
                   </label>
@@ -923,7 +931,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               {/* TIKTOK IF OPERATION */}
               {data.data[0].product?.Nombre == "TikTok" && (
                 <>
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -934,7 +942,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                   <label htmlFor="datos-cuenta" className="text-sm text-white">
                     Datos de cuenta:
                   </label>
@@ -976,7 +984,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               {/* ZINLI IF OPERATION */}
               {data.data[0].product?.Nombre == "Zinli" && (
                 <>
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -987,7 +995,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                   <label htmlFor="datos-cuenta" className="text-sm text-white">
                     Datos de Zinli:
                   </label>
@@ -1006,7 +1014,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
               {/* BINANCE IF OPERATION */}
               {data.data[0].product?.Nombre == "Binance" && (
                 <>
-                  <label className="block text-sm text-white">
+                  {/* <label className="block text-sm text-white">
                     Teléfono de contacto (WhatsApp):
                   </label>
                   <input
@@ -1017,7 +1025,7 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     placeholder="Ingresa tu teléfono ej: 04121234567"
                     maxLength={12}
                     required
-                  />
+                  /> */}
                   <label htmlFor="datos-cuenta" className="text-sm text-white">
                     Binance ID/Correo electrónico:
                   </label>
@@ -1085,7 +1093,6 @@ const Modal = ({ isOpen, onClose, itemId }) => {
                     ContraseñaDeCuenta: passwordVal,
                     MetodoDeInicioSesion: loginMethod,
                     PlataformaDeJuego: gamePlatform,
-                    TelefonoDeContacto: telefono,
                     IDZona: idZonaVal,
                     FechaAgregado: new Date().toISOString(),
                   };

@@ -18,6 +18,7 @@ const Cart = ({ isOpen, onClose }) => {
   const [paymentMethod, setPaymentMethod] = useState("pago-movil");
   const [copyMessage, setCopyMessage] = useState("");
   const [referencia, setReferencia] = useState("");
+  const [telefono, setTelefono] = useState("");
   const [idOrden] = useState(null);
 
   const paymentListRef = useRef(null);
@@ -56,6 +57,22 @@ const Cart = ({ isOpen, onClose }) => {
     const input = e.target.value.replace(/\D/g, "");
     const truncated = input.slice(0, 4);
     setReferencia(truncated);
+  };
+
+  const handleTelefonoChange = (e) => {
+    // 1. Eliminar todo lo que no sea número
+    const input = e.target.value.replace(/\D/g, "");
+
+    // 2. Limitar a 11 dígitos (formato estándar 04XX1234567)
+    const truncated = input.slice(0, 11);
+
+    // 3. Aplicar la máscara dinámica (Ej: 0412-1234567)
+    let formatted = truncated;
+    if (truncated.length > 4) {
+      formatted = `${truncated.slice(0, 4)}-${truncated.slice(4)}`;
+    }
+
+    setTelefono(formatted);
   };
 
   const strictValidateCart = () => {
@@ -179,6 +196,7 @@ const Cart = ({ isOpen, onClose }) => {
               Estado: "PENDIENTE",
               Referencia: referencia ? parseInt(referencia) : null,
               MetodoPago: paymentMethod,
+              Telefono: telefono,
             },
           }),
         },
@@ -244,9 +262,7 @@ const Cart = ({ isOpen, onClose }) => {
                 );
                 const itemTotal = isNaN(rawPrice) ? 0 : rawPrice * qty;
                 const itemImgUrl = getImageUrl(item.ImagenCoin);
-                if (itemImgUrl) {
-                  console.log("imgUrl for cart item", itemImgUrl);
-                }
+
                 return (
                   <li
                     key={index}
@@ -468,6 +484,18 @@ const Cart = ({ isOpen, onClose }) => {
                   required
                 />
               </label>
+              <label className="block text-sm text-white">
+                Teléfono de contacto (Whatsapp):
+                <input
+                  type="tel"
+                  value={telefono}
+                  onChange={handleTelefonoChange}
+                  className="w-full p-2 rounded mt-2 bg-gray-700 text-white"
+                  placeholder="Ingresa tu teléfono ej: 0412-1234567"
+                  maxLength={12}
+                  required
+                />
+              </label>
               <button
                 onClick={submitOrder}
                 disabled={isSubmitting || !isFormValid}
@@ -491,11 +519,13 @@ const Cart = ({ isOpen, onClose }) => {
             // close the cart modal as well when receipt is dismissed
             onClose();
             setReferencia("");
+            setTelefono("");
           }}
           data={receiptData}
           orderId={idOrden}
           paymentMethod={paymentMethod}
           referencia={referencia}
+          telefono={telefono}
         />
       </div>
     </div>
